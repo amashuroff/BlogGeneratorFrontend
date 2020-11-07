@@ -4,7 +4,9 @@ import App from "./components/App";
 import { Provider } from "react-redux";
 import { createStore, compose, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
-// import reducers from "./reducers";
+
+import sagaWatcher from "./redux/sagas";
+import reducers from "./redux/reducers";
 
 // redux dev tools
 const composeEnchancers =
@@ -12,7 +14,12 @@ const composeEnchancers =
 
 const sagaMiddleWare = createSagaMiddleware();
 
-const store = createStore(composeEnchancers(applyMiddleware(sagaMiddleWare)));
+const store = createStore(
+  reducers,
+  composeEnchancers(applyMiddleware(sagaMiddleWare))
+);
+
+sagaMiddleWare.run(sagaWatcher);
 
 ReactDOM.render(
   <Provider store={store}>

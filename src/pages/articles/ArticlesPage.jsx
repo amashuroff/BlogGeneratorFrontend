@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { requestArticles } from "../../redux/actions";
 import Table from "../../components/table/Table";
 import {
   Box,
@@ -9,11 +11,17 @@ import {
   Paper,
   Link as MaterialLink,
 } from "@material-ui/core";
-import { CloudUpload, ImageOutlined } from "@material-ui/icons";
+import { CloudUpload } from "@material-ui/icons";
 import { useArticleStyles } from "../../styles/styles";
 
-const Articles = () => {
+const Articles = (props) => {
   const classes = useArticleStyles();
+
+  useEffect(() => {
+    props.requestArticles();
+  }, []);
+
+  console.log(props.articles);
 
   return (
     <Paper elevation={0} className={classes.paper}>
@@ -69,4 +77,10 @@ const Articles = () => {
   );
 };
 
-export default Articles;
+const mapStateToProps = (state) => {
+  return {
+    articles: state.articles,
+  };
+};
+
+export default connect(mapStateToProps, { requestArticles })(Articles);
