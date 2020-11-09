@@ -25,7 +25,7 @@ const Articles = (props) => {
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="space-between">
             <Box>

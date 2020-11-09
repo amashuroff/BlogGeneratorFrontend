@@ -54,9 +54,31 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
 
           {renderRowsFromHeadCells(item)}
 
-          <TableCell align="right">
-            {renderView(item.id)}
-            {renderEdit(item.id)}
+          <TableCell align="right" className={classes.cellWithIcons}>
+            <IconButton
+              aria-label="update row"
+              component={Link}
+              to={`${pathname}/view/${item.id}`}
+              className={
+                !disableView && hovered === item.id
+                  ? classes.iconShow
+                  : classes.iconHide
+              }
+            >
+              <CreateIcon />
+            </IconButton>
+            <IconButton
+              aria-label="view row"
+              component={Link}
+              to={`${pathname}/update/${item.id}`}
+              className={
+                !disableView && hovered === item.id
+                  ? classes.iconShow
+                  : classes.iconHide
+              }
+            >
+              <SearchIcon />
+            </IconButton>
           </TableCell>
         </TableRow>
       );
@@ -79,30 +101,6 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
         </TableCell>
       );
     });
-  };
-
-  const renderView = (id) => {
-    return !disableView && id === hovered ? (
-      <IconButton
-        aria-label="view row"
-        component={Link}
-        to={`${pathname}/update/${id}`}
-      >
-        <SearchIcon />
-      </IconButton>
-    ) : null;
-  };
-
-  const renderEdit = (id) => {
-    return !disableEdit && id === hovered ? (
-      <IconButton
-        aria-label="update row"
-        component={Link}
-        to={`${pathname}/view/${id}`}
-      >
-        <CreateIcon />
-      </IconButton>
-    ) : null;
   };
 
   const renderPager = () => {
@@ -139,7 +137,7 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
           <MaterialTable
             className={classes.table}
             aria-labelledby="Table data"
-            size={"small"}
+            size="small"
             aria-label="table"
           >
             {/* <THead
@@ -187,5 +185,3 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
 };
 
 export default Table;
-
-// return ;

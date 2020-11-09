@@ -98,6 +98,12 @@ export const useArticleStyles = makeStyles({
   paper: {
     padding: "40px",
     backgroundColor: "#F6F9FC",
+    maxHeight: "85vh",
+    height: "100%",
+  },
+  grid: {
+    maxWidth: 1400,
+    margin: "0 auto ",
   },
 });
 
@@ -132,6 +138,7 @@ export const useTableBodyStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
+    "& .MuiTableCell-sizeSmall": {},
   },
   visuallyHidden: {
     border: 0,
@@ -143,6 +150,17 @@ export const useTableBodyStyles = makeStyles((theme) => ({
     position: "absolute",
     top: 20,
     width: 1,
+  },
+  iconHide: {
+    padding: "8px",
+    visibility: "hidden",
+  },
+  iconShow: {
+    padding: "8px",
+    visibility: "visible",
+  },
+  cellWithIcons: {
+    padding: "2px 16px 2px 8px",
   },
 }));
 
