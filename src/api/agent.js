@@ -3,7 +3,6 @@ import { ApiServerUrl } from "./urls";
 
 axios.defaults.baseURL = ApiServerUrl;
 
-// response.data
 const responseBody = (response) => response.data;
 
 const requests = {

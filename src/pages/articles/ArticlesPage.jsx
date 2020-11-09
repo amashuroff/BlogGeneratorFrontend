@@ -11,6 +11,7 @@ import {
   Paper,
   Link as MaterialLink,
 } from "@material-ui/core";
+import headcells, { headCells } from "../../config/headcells";
 import { CloudUpload } from "@material-ui/icons";
 import { useArticleStyles } from "../../styles/styles";
 
@@ -20,8 +21,6 @@ const Articles = (props) => {
   useEffect(() => {
     props.requestArticles();
   }, []);
-
-  console.log(props.articles);
 
   return (
     <Paper elevation={0} className={classes.paper}>
@@ -70,7 +69,7 @@ const Articles = (props) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Table />
+          <Table data={props.articles} headCells={headcells.Articles} />
         </Grid>
       </Grid>
     </Paper>
