@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import PropTypes from "prop-types";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -9,14 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { Box, Icon } from "@material-ui/core";
 import { useToolbarStyles } from "../../styles/styles";
 
-const TableToolbar = ({
-  numSelected,
-  deleteRows,
-  config,
-  toggleFilter,
-  filter,
-  disableFilter,
-}) => {
+const TableToolbar = ({ numSelected }) => {
   const classes = useToolbarStyles();
 
   const showToolbar = () => {
@@ -46,7 +38,7 @@ const TableToolbar = ({
 
       {numSelected > 0 ? (
         <Box display="flex">
-          <Tooltip title="Delete" onClick={() => deleteRows(config)}>
+          <Tooltip title="Delete">
             <IconButton aria-label="delete">
               <DeleteIcon />
             </IconButton>
@@ -54,7 +46,7 @@ const TableToolbar = ({
         </Box>
       ) : (
         <Box ml={"96%"}>
-          {disableFilter ? null : (
+          {/* {disableFilter ? null : (
             <IconButton onClick={toggleFilter}>
               {filter ? (
                 <Icon>
@@ -72,15 +64,11 @@ const TableToolbar = ({
                 </Icon>
               )}
             </IconButton>
-          )}
+          )} */}
         </Box>
       )}
     </Toolbar>
   );
-};
-
-TableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
 };
 
 export default TableToolbar;

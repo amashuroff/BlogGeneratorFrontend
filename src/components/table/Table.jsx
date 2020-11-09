@@ -30,25 +30,25 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
   const { pathname } = window.location;
   const [hovered, setHovered] = useState(null);
 
+  const [selectedItems, setSelectedItems] = useState([]);
+
   const renderRows = () => {
     if (!data.items) return null;
 
     return data.items.map((item, index) => {
-      // const isItemSelected = isSelected(row.id);
+      const isItemSelected = isSelected(item.id);
       return (
         <TableRow
           key={`row-${index}`}
-          tabIndex={-1}
           hover
-          role="checkbox"
           onMouseLeave={() => setHovered(null)}
           onMouseOver={() => setHovered(item.id)}
         >
           <TableCell padding="checkbox">
             <Checkbox
               key={`checkbox-${index}`}
-              // onClick={(event) => handleClick(event, row.id)}
-              // checked={isItemSelected}
+              onClick={(event) => handleSelect(event, item.id)}
+              checked={isItemSelected}
             />
           </TableCell>
 
@@ -56,7 +56,6 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
 
           <TableCell align="right" className={classes.cellWithIcons}>
             <IconButton
-              aria-label="update row"
               component={Link}
               to={`${pathname}/view/${item.id}`}
               className={
@@ -68,11 +67,10 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
               <CreateIcon />
             </IconButton>
             <IconButton
-              aria-label="view row"
               component={Link}
               to={`${pathname}/update/${item.id}`}
               className={
-                !disableView && hovered === item.id
+                !disableEdit && hovered === item.id
                   ? classes.iconShow
                   : classes.iconHide
               }
@@ -129,26 +127,55 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
     );
   };
 
+  // SELECTING ALL ITEMS/ITEM
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = data.items.map((n) => n.id);
+      setSelectedItems(newSelected);
+      return;
+    }
+    setSelectedItems([]);
+  };
+
+  const handleSelect = (event, id) => {
+    const selectedIndex = selectedItems.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedItems, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedItems.slice(1));
+    } else if (selectedIndex === selectedItems.length - 1) {
+      newSelected = newSelected.concat(selectedItems.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedItems.slice(0, selectedIndex),
+        selectedItems.slice(selectedIndex + 1)
+      );
+    }
+
+    setSelectedItems(newSelected);
+  };
+  const isSelected = (id) => selectedItems.indexOf(id) !== -1;
+  // SELECTING ALL ITEMS/ITEM
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         {renderLoader()}
         <TableContainer>
+          <TableToolbar numSelected={selectedItems.length} />
           <MaterialTable
             className={classes.table}
             aria-labelledby="Table data"
             size="small"
-            aria-label="table"
           >
-            {/* <THead
+            <THead
               numSelected={selectedItems.length}
               onSelectAllClick={handleSelectAllClick}
-              rowCount={rows.length}
+              rowCount={data.items ? data.items.length : 0}
               headCells={headCells}
-              orderBy={orderBy}
-              order={order}
-              onRequestSort={handleSortBy}
-            /> */}
+            />
             <TableBody>
               {/* {filter ? (
                 <TableRow>
