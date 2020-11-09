@@ -6,21 +6,21 @@
 // */
 
 const Articles = {
-  Page: 0,
-  PageSize: 5,
-  SortByCreatedAt: 2,
+  page: 0,
+  pageSize: 5,
+  sortByCreatedAt: 2,
 };
 
 const Languages = {
-  Page: 0,
-  PageSize: 5,
-  SortByCreatedAt: 2,
+  page: 0,
+  pageSize: 5,
+  sortByCreatedAt: 2,
 };
 
 const Topics = {
-  Page: 0,
-  PageSize: 5,
-  SortByCreatedAt: 2,
+  page: 0,
+  pageSize: 5,
+  sortByCreatedAt: 2,
 };
 
 export default {

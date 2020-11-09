@@ -11,7 +11,8 @@ import {
   Paper,
   Link as MaterialLink,
 } from "@material-ui/core";
-import headcells, { headCells } from "../../config/headcells";
+import headcells from "../../config/headcells";
+import config from "../../api/config";
 import { CloudUpload } from "@material-ui/icons";
 import { useArticleStyles } from "../../styles/styles";
 
@@ -69,7 +70,11 @@ const Articles = (props) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Table data={props.articles} headCells={headcells.Articles} />
+          <Table
+            data={props.articles}
+            headCells={headcells.Articles}
+            config={config.Articles}
+          />
         </Grid>
       </Grid>
     </Paper>

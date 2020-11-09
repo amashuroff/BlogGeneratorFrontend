@@ -20,21 +20,21 @@ import THead from "./THead";
 import TableToolbar from "./TableToolbar";
 import { LinearProgress } from "@material-ui/core";
 import { useTableBodyStyles } from "../../styles/styles";
-import { compose } from "redux";
 
 const formatTime = (time) => {
   return moment(time).format("MMMM Do, YYYY");
 };
 
-const Table = (props) => {
+const Table = ({ data, headCells, config, disableEdit, disableView }) => {
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
   const [hovered, setHovered] = useState(null);
 
   const renderRows = () => {
-    if (!props.data.items) return null;
+    if (!data.items) return null;
 
-    return props.data.items.map((item, index) => {
+    return data.items.map((item, index) => {
+      // const isItemSelected = isSelected(row.id);
       return (
         <TableRow
           key={`row-${index}`}
@@ -45,7 +45,11 @@ const Table = (props) => {
           onMouseOver={() => setHovered(item.id)}
         >
           <TableCell padding="checkbox">
-            <Checkbox key={`checkbox-${index}`}></Checkbox>
+            <Checkbox
+              key={`checkbox-${index}`}
+              // onClick={(event) => handleClick(event, row.id)}
+              // checked={isItemSelected}
+            />
           </TableCell>
 
           {renderRowsFromHeadCells(item)}
@@ -60,7 +64,7 @@ const Table = (props) => {
   };
 
   const renderRowsFromHeadCells = (item) => {
-    return props.headCells.map((cell) => {
+    return headCells.map((cell) => {
       if (cell.label.endsWith("date")) {
         return (
           <TableCell align="left" key={cell.id}>
@@ -78,7 +82,7 @@ const Table = (props) => {
   };
 
   const renderView = (id) => {
-    return !props.disableView && id === hovered ? (
+    return !disableView && id === hovered ? (
       <IconButton
         aria-label="view row"
         component={Link}
@@ -90,7 +94,7 @@ const Table = (props) => {
   };
 
   const renderEdit = (id) => {
-    return !props.disableEdit && id === hovered ? (
+    return !disableEdit && id === hovered ? (
       <IconButton
         aria-label="update row"
         component={Link}
@@ -99,6 +103,22 @@ const Table = (props) => {
         <CreateIcon />
       </IconButton>
     ) : null;
+  };
+
+  const renderPager = () => {
+    return (
+      <TablePagination
+        component="div"
+        count={data.pager ? data.pager.total : 0}
+        rowsPerPage={
+          [5, 25, 50, 100].includes(config.pageSize) ? config.pageSize : ""
+        }
+        page={data.pager ? data.pager.page : 0}
+        // onChangePage={(event, page) => handleChangePage(page)}
+        // onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
+        rowsPerPageOptions={data.pager ? [5, 25, 50, 100] : [""]}
+      />
+    );
   };
 
   return (
@@ -149,23 +169,7 @@ const Table = (props) => {
             </TableBody>
           </MaterialTable>
         </TableContainer>
-
-        {/* <TablePagination
-          component="div"
-          count={pager ? pager.total : 0}
-          rowsPerPage={
-            [5, 25, 50, 100].includes(config.PageSize) ? config.PageSize : ""
-          }
-          page={pager ? pager.page : 0}
-          onChangePage={(event, page) => handleChangePage(page)}
-          onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
-          rowsPerPageOptions={pager ? [5, 25, 50, 100] : [""]}
-        />
-        {loading ? (
-          <div>
-            <LinearProgress />
-          </div>
-        ) : null} */}
+        {renderPager()}
       </Paper>
     </div>
   );
@@ -173,31 +177,8 @@ const Table = (props) => {
 
 export default Table;
 
-{
-  /* {rows.map((row, index) => {
-                const isItemSelected = isSelected(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
-
-                return (
-                  <TableRow
-                    onMouseLeave={() => setCurrRow(null)}
-                    onMouseOver={() => setCurrRow(row.id)}
-                    hover
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        onClick={(event) => handleClick(event, row.id)}
-                        checked={isItemSelected}
-                        inputProps={{ "aria-labelledby": labelId }}
-                        key={`checkbox-${row.id}`}
-                      />
-                    </TableCell>
-                    
-                  </TableRow>
-                );
-              })} */
-}
+// {loading ? (
+//   <div>
+//     <LinearProgress />
+//   </div>
+// ) : null}
