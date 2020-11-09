@@ -1,2 +1,5 @@
+export const SHOW_LOADER = "SHOW_LOADER";
+export const HIDE_LOADER = "HIDE_LOADER";
+
 export const REQUEST_ARTICLES = "REQUEST_ARTICLES";
 export const FETCH_ARTICLES = "FETCH_ARTICLES";

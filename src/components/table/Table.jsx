@@ -121,9 +121,20 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
     );
   };
 
+  const renderLoader = () => {
+    if (!data.loading) return null;
+
+    return (
+      <div>
+        <LinearProgress />
+      </div>
+    );
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
+        {renderLoader()}
         <TableContainer>
           <MaterialTable
             className={classes.table}
@@ -177,8 +188,4 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
 
 export default Table;
 
-// {loading ? (
-//   <div>
-//     <LinearProgress />
-//   </div>
-// ) : null}
+// return ;

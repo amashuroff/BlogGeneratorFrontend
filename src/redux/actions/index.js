@@ -1,7 +1,13 @@
-import { REQUEST_ARTICLES } from "./types";
+import { SHOW_LOADER, HIDE_LOADER } from "../actions/types";
 
-export const requestArticles = () => {
+export const showLoader = () => {
   return {
-    type: REQUEST_ARTICLES,
+    type: SHOW_LOADER,
+  };
+};
+
+export const hideLoader = () => {
+  return {
+    type: HIDE_LOADER,
   };
 };
