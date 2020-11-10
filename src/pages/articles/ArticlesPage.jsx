@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { requestArticles } from "../../redux/actions/articlesActions";
 import Table from "../../components/table/Table";
 import {
   Box,
@@ -11,15 +9,27 @@ import {
   Paper,
   Link as MaterialLink,
 } from "@material-ui/core";
-import headcells from "../../config/headcells";
 import { CloudUpload } from "@material-ui/icons";
 import { useArticleStyles } from "../../styles/styles";
 
-const Articles = (props) => {
+import headcells from "../../config/headcells";
+import agent from "../../api/agent";
+import config from "../../api/config";
+
+const Articles = () => {
   const classes = useArticleStyles();
+  const [tableData, setTableData] = useState({});
 
   useEffect(() => {
-    props.requestArticles();
+    const fetchArticles = async () => {
+      try {
+        const data = await agent.Articles.list(config.Articles);
+        setTableData({ ...data, ...tableData });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchArticles();
   }, []);
 
   return (
@@ -69,21 +79,11 @@ const Articles = (props) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Table
-            data={props.articles}
-            headCells={headcells.Articles}
-            config={props.articles.config}
-          />
+          <Table data={tableData} headCells={headcells.Articles} />
         </Grid>
       </Grid>
     </Paper>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    articles: state.articles,
-  };
-};
-
-export default connect(mapStateToProps, { requestArticles })(Articles);
+export default Articles;

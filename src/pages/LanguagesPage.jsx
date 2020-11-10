@@ -41,6 +41,7 @@ const Languages = (props) => {
             config={props.languages.config}
             disableEdit
             disableView
+            disableFilter
           />
         </Grid>
       </Grid>

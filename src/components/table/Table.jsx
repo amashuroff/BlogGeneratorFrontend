@@ -25,11 +25,16 @@ const formatTime = (time) => {
   return moment(time).format("MMMM Do, YYYY");
 };
 
-const Table = ({ data, headCells, config, disableEdit, disableView }) => {
+const Table = ({
+  data,
+  headCells,
+  disableEdit,
+  disableView,
+  disableFilter,
+}) => {
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
   const [hovered, setHovered] = useState(null);
-
   const [selectedItems, setSelectedItems] = useState([]);
 
   const renderRows = () => {
@@ -57,9 +62,9 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
           <TableCell align="right" className={classes.cellWithIcons}>
             <IconButton
               component={Link}
-              to={`${pathname}/view/${item.id}`}
+              to={`${pathname}/update/${item.id}`}
               className={
-                !disableView && hovered === item.id
+                !disableEdit && hovered === item.id
                   ? classes.iconShow
                   : classes.iconHide
               }
@@ -68,9 +73,9 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
             </IconButton>
             <IconButton
               component={Link}
-              to={`${pathname}/update/${item.id}`}
+              to={`${pathname}/view/${item.id}`}
               className={
-                !disableEdit && hovered === item.id
+                !disableView && hovered === item.id
                   ? classes.iconShow
                   : classes.iconHide
               }
@@ -106,9 +111,7 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
       <TablePagination
         component="div"
         count={data.pager ? data.pager.total : 0}
-        rowsPerPage={
-          [5, 25, 50, 100].includes(config.pageSize) ? config.pageSize : ""
-        }
+        rowsPerPage={data.pager ? data.pager.pageSize : ""}
         page={data.pager ? data.pager.page : 0}
         // onChangePage={(event, page) => handleChangePage(page)}
         // onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
@@ -164,7 +167,10 @@ const Table = ({ data, headCells, config, disableEdit, disableView }) => {
       <Paper className={classes.paper}>
         {renderLoader()}
         <TableContainer>
-          <TableToolbar numSelected={selectedItems.length} />
+          <TableToolbar
+            numSelected={selectedItems.length}
+            disableFilter={disableFilter}
+          />
           <MaterialTable
             className={classes.table}
             aria-labelledby="Table data"

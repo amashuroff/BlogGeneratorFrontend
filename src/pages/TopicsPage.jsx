@@ -41,6 +41,7 @@ const Topics = (props) => {
             config={props.topics.config}
             disableEdit
             disableView
+            disableFilter
           />
         </Grid>
       </Grid>

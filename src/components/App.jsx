@@ -5,8 +5,6 @@ import { CssBaseline } from "@material-ui/core";
 import AppWrapper from "./AppWrapper.jsx";
 import Home from "../pages/HomePage";
 import ArticlesPage from "../pages/articles/ArticlesPage";
-import LanguagesPage from "../pages/LanguagesPage";
-import TopicsPage from "../pages/TopicsPage.jsx";
 
 function App() {
   return (
@@ -24,10 +22,10 @@ function App() {
             <Route path="/articles/edit/:id" />
             <Route path="/articles/upload" />
 
-            <Route path="/topics" exact component={TopicsPage} />
+            <Route path="/topics" exact />
             <Route path="/topics/new" />
 
-            <Route path="/languages" exact component={LanguagesPage} />
+            <Route path="/languages" exact />
             <Route path="/languages/new" />
           </Switch>
         </AppWrapper>
