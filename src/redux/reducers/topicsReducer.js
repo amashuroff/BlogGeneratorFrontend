@@ -1,4 +1,4 @@
-import { FETCH_ARTICLES } from "../actions/types";
+import { FETCH_TOPICS } from "../actions/types";
 
 // /*
 // Sort:
@@ -16,9 +16,9 @@ const INITIAL_STATE = {
   },
 };
 
-export const articlesReducer = (state = INITIAL_STATE, action) => {
+export const topicsReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case FETCH_ARTICLES:
+    case FETCH_TOPICS:
       return { ...state, ...action.payload };
 
     default:

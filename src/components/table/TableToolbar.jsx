@@ -8,66 +8,71 @@ import IconButton from "@material-ui/core/IconButton";
 import { Box, Icon } from "@material-ui/core";
 import { useToolbarStyles } from "../../styles/styles";
 
-const TableToolbar = ({ numSelected }) => {
+const TableToolbar = ({ numSelected, disableFilter }) => {
   const classes = useToolbarStyles();
 
-  const showToolbar = () => {
+  const renderToolbar = () => {
+    if (numSelected <= 0 && disableFilter) return null;
+
     if (numSelected > 0) {
       return (
-        <Typography
-          className={classes.title}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
+        <>
+          <Typography
+            className={classes.title}
+            color="inherit"
+            variant="subtitle1"
+            component="div"
+          >
+            {numSelected} selected
+          </Typography>
+          <Box display="flex">
+            <Tooltip title="Delete">
+              <IconButton aria-label="delete">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </>
       );
     } else {
-      return null;
+      return (
+        <Box display="flex" ml={"96%"}>
+          {renderFilter()}
+        </Box>
+      );
     }
   };
 
-  return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
-    >
-      {showToolbar()}
+  const renderFilter = () => {
+    const openFilter = false;
+    if (!openFilter) {
+      return (
+        <IconButton>
+          <Icon>
+            <img src="./img/openFilterIcon.svg" alt="open filter icon" />
+          </Icon>
+        </IconButton>
+      );
+    }
+    return (
+      <IconButton>
+        <Icon>
+          <img src="./img/closeFilterIcon.svg" alt="open filter icon" />
+        </Icon>
+      </IconButton>
+    );
+  };
 
-      {numSelected > 0 ? (
-        <Box display="flex">
-          <Tooltip title="Delete">
-            <IconButton aria-label="delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ) : (
-        <Box ml={"96%"}>
-          {/* {disableFilter ? null : (
-            <IconButton onClick={toggleFilter}>
-              {filter ? (
-                <Icon>
-                  <img
-                    src="../../img/closeFilterIcon.svg"
-                    alt="close filter icon"
-                  />
-                </Icon>
-              ) : (
-                <Icon>
-                  <img
-                    src="../../img/openFilterIcon.svg"
-                    alt="open filter icon"
-                  />
-                </Icon>
-              )}
-            </IconButton>
-          )} */}
-        </Box>
-      )}
-    </Toolbar>
+  return (
+    <div>
+      <Toolbar
+        className={clsx(classes.root, {
+          [classes.highlight]: numSelected > 0,
+        })}
+      >
+        {renderToolbar()}
+      </Toolbar>
+    </div>
   );
 };
 

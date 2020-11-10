@@ -21,6 +21,7 @@ const Articles = (props) => {
   useEffect(() => {
     props.requestArticles();
   }, []);
+
   return (
     <Paper elevation={0} className={classes.paper}>
       <Grid container spacing={2} className={classes.grid}>
