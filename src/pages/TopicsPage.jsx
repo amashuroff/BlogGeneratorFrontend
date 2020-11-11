@@ -1,22 +1,41 @@
-import React, { useEffect } from "react";
-import { Box, Grid, Typography, Paper } from "@material-ui/core";
-import { useArticleStyles } from "../styles/styles";
-import headcells from "../config/headcells";
-import { requestTopics } from "../redux/actions/topicsActions";
-import { connect } from "react-redux";
-
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Table from "../components/table/Table";
+import { Box, Button, Grid, Typography, Paper } from "@material-ui/core";
+import { useArticleStyles } from "../styles/styles";
 
-const Topics = (props) => {
+import headcells from "../config/headcells";
+import agent from "../api/agent";
+import config from "../api/config";
+import ErrorToast from "../components/ErrorToast";
+import LinearLoader from "../components/LinearLoader";
+
+const TopicsPage = () => {
   const classes = useArticleStyles();
+  const [tableData, setTableData] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    props.requestTopics();
+    fetchTopics();
   }, []);
+
+  const fetchTopics = async () => {
+    try {
+      setIsFetching(true);
+      const data = await agent.Articles.list(config.Articles);
+      setTableData({ ...data, ...tableData });
+    } catch (error) {
+      setErrors({ ...errors, error });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      <Grid container spacing={2}>
+      <ErrorToast error={errors.error?.message} />
+      <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="space-between">
             <Box>
@@ -27,21 +46,26 @@ const Topics = (props) => {
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" alignItems="center">
             <Box mr={1}>
-              {/* <FormDialogAdd
-                    name={"Language"}
-                    handleAddNewOption={addRow}
-                  /> */}
+              <Button
+                variant="contained"
+                color="primary"
+                disableElevation
+                component={Link}
+                to="/topics/create"
+              >
+                Create
+              </Button>
             </Box>
           </Box>
         </Grid>
         <Grid item xs={12}>
+          <LinearLoader isFetching={isFetching} />
           <Table
-            data={props.topics}
+            data={tableData}
             headCells={headcells.Topics}
-            config={props.topics.config}
             disableEdit
-            disableView
             disableFilter
+            disableView
           />
         </Grid>
       </Grid>
@@ -49,10 +73,4 @@ const Topics = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    topics: state.topics,
-  };
-};
-
-export default connect(mapStateToProps, { requestTopics })(Topics);
+export default TopicsPage;

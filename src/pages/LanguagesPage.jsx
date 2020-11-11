@@ -1,22 +1,41 @@
-import React, { useEffect } from "react";
-import { Box, Grid, Typography, Paper } from "@material-ui/core";
-import { useArticleStyles } from "../styles/styles";
-import headcells from "../config/headcells";
-import { requestLanguages } from "../redux/actions/languagesActions";
-import { connect } from "react-redux";
-
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Table from "../components/table/Table";
+import { Box, Button, Grid, Typography, Paper } from "@material-ui/core";
+import { useArticleStyles } from "../styles/styles";
 
-const Languages = (props) => {
+import headcells from "../config/headcells";
+import agent from "../api/agent";
+import config from "../api/config";
+import ErrorToast from "../components/ErrorToast";
+import LinearLoader from "../components/LinearLoader";
+
+const LanguagesPage = () => {
   const classes = useArticleStyles();
+  const [tableData, setTableData] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    props.requestLanguages();
+    fetchLanguages();
   }, []);
+
+  const fetchLanguages = async () => {
+    try {
+      setIsFetching(true);
+      const data = await agent.Articles.list(config.Articles);
+      setTableData({ ...data, ...tableData });
+    } catch (error) {
+      setErrors({ ...errors, error });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      <Grid container spacing={2}>
+      <ErrorToast error={errors.error?.message} />
+      <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="space-between">
             <Box>
@@ -27,21 +46,26 @@ const Languages = (props) => {
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" alignItems="center">
             <Box mr={1}>
-              {/* <FormDialogAdd
-                    name={"Language"}
-                    handleAddNewOption={addRow}
-                  /> */}
+              <Button
+                variant="contained"
+                color="primary"
+                disableElevation
+                component={Link}
+                to="/languages/create"
+              >
+                Create
+              </Button>
             </Box>
           </Box>
         </Grid>
         <Grid item xs={12}>
+          <LinearLoader isFetching={isFetching} />
           <Table
-            data={props.languages}
+            data={tableData}
             headCells={headcells.Languages}
-            config={props.languages.config}
             disableEdit
-            disableView
             disableFilter
+            disableView
           />
         </Grid>
       </Grid>
@@ -49,10 +73,4 @@ const Languages = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    languages: state.languages,
-  };
-};
-
-export default connect(mapStateToProps, { requestLanguages })(Languages);
+export default LanguagesPage;
