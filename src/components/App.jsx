@@ -1,10 +1,12 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
+import history from "../api/history";
 import { CssBaseline } from "@material-ui/core";
 
 import AppWrapper from "./AppWrapper.jsx";
 import Home from "../pages/HomePage";
 import ArticlesPage from "../pages/articles/ArticlesPage";
+import CreateArticlesPage from "../pages/articles/CreateArticlesPage";
 import LanguagesPage from "../pages/LanguagesPage";
 import TopicsPage from "../pages/TopicsPage";
 
@@ -13,13 +15,13 @@ function App() {
     <>
       <CssBaseline />
 
-      <BrowserRouter>
+      <Router history={history}>
         <AppWrapper>
           <Switch>
             <Route path="/" exact component={Home} />
 
             <Route path="/articles" exact component={ArticlesPage} />
-            <Route path="/articles/new" />
+            <Route path="/articles/new" component={CreateArticlesPage} />
             <Route path="/articles/show/:id" />
             <Route path="/articles/edit/:id" />
             <Route path="/articles/upload" />
@@ -31,7 +33,7 @@ function App() {
             <Route path="/languages/new" />
           </Switch>
         </AppWrapper>
-      </BrowserRouter>
+      </Router>
     </>
   );
 }

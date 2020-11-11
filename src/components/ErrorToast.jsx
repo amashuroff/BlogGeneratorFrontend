@@ -23,8 +23,7 @@ const ErrorToast = ({ error }) => {
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
     >
       <Alert onClose={handleClose} severity="warning">
-        {`Something went wrong, please refresh the page or contact us! 
-        ${error}`}
+        {`Something went wrong, please refresh the page or contact us! Error: ${error}`}
       </Alert>
     </Snackbar>
   );

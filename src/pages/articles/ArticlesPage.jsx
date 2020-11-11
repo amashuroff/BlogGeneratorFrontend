@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import {
   Box,
   Button,
@@ -8,7 +7,6 @@ import {
   Typography,
   Paper,
   Link as MaterialLink,
-  Snackbar,
 } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
 import Table from "../../components/table/Table";
@@ -18,7 +16,6 @@ import { useArticleStyles } from "../../styles/styles";
 import headcells from "../../config/headcells";
 import agent from "../../api/agent";
 import config from "../../api/config";
-import { Alert } from "@material-ui/lab";
 import ErrorToast from "../../components/ErrorToast";
 
 const Articles = () => {
@@ -73,7 +70,7 @@ const Articles = () => {
                 color="primary"
                 disableElevation
                 component={Link}
-                to="/articles/create"
+                to="/articles/new"
               >
                 Create
               </Button>

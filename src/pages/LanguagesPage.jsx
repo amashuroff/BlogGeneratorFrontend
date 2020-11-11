@@ -23,7 +23,7 @@ const LanguagesPage = () => {
   const fetchLanguages = async () => {
     try {
       setIsFetching(true);
-      const data = await agent.Articles.list(config.Articles);
+      const data = await agent.Languages.list(config.Languages);
       setTableData({ ...data, ...tableData });
     } catch (error) {
       setErrors({ ...errors, error });
@@ -51,7 +51,7 @@ const LanguagesPage = () => {
                 color="primary"
                 disableElevation
                 component={Link}
-                to="/languages/create"
+                to="/languages/new"
               >
                 Create
               </Button>

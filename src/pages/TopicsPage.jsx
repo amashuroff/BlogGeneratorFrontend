@@ -23,7 +23,7 @@ const TopicsPage = () => {
   const fetchTopics = async () => {
     try {
       setIsFetching(true);
-      const data = await agent.Articles.list(config.Articles);
+      const data = await agent.Topics.list(config.Topics);
       setTableData({ ...data, ...tableData });
     } catch (error) {
       setErrors({ ...errors, error });
@@ -51,7 +51,7 @@ const TopicsPage = () => {
                 color="primary"
                 disableElevation
                 component={Link}
-                to="/topics/create"
+                to="/topics/new"
               >
                 Create
               </Button>

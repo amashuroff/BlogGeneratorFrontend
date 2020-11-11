@@ -8,7 +8,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { Box } from "@material-ui/core";
 import OutlinedButton from "./OutlinedButton";
 
-const FormDialog = ({ name, handleAddNewOption }) => {
+const FormModal = ({ name, handleAddNewOption }) => {
   const [open, setOpen] = useState(false);
   const [option, setOption] = useState("");
 
@@ -83,4 +83,4 @@ const FormDialog = ({ name, handleAddNewOption }) => {
   );
 };
 
-export default FormDialog;
+export default FormModal;
