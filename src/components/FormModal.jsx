@@ -8,7 +8,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { Box } from "@material-ui/core";
 import OutlinedButton from "./OutlinedButton";
 
-const FormModal = ({ name, handleAddNewOption }) => {
+const FormModal = ({ name, handleCreateOption }) => {
   const [open, setOpen] = useState(false);
   const [option, setOption] = useState("");
 
@@ -70,7 +70,7 @@ const FormModal = ({ name, handleAddNewOption }) => {
           </Button>
           <Button
             onClick={() => {
-              handleAddNewOption(option.toLowerCase());
+              handleCreateOption(option.toLowerCase());
               handleClose();
             }}
             color="primary"

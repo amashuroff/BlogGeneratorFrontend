@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { Box, Icon } from "@material-ui/core";
 import { useToolbarStyles } from "../../styles/styles";
 
-const TableToolbar = ({ numSelected, disableFilter }) => {
+const TableToolbar = ({ numSelected, disableFilter, deleteRows }) => {
   const classes = useToolbarStyles();
 
   const renderToolbar = () => {
@@ -27,7 +27,7 @@ const TableToolbar = ({ numSelected, disableFilter }) => {
           </Typography>
           <Box display="flex">
             <Tooltip title="Delete">
-              <IconButton aria-label="delete">
+              <IconButton aria-label="delete" onClick={deleteRows}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>

@@ -18,12 +18,14 @@ const CreateArticlePage = () => {
   });
   const [languages, setLanguages] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchLanguages();
     fetchTopics();
-  }, []);
+  }, [refresh]);
 
   const fetchLanguages = async () => {
     try {
@@ -47,14 +49,43 @@ const CreateArticlePage = () => {
     setFieldContent({ ...fieldContent, [type]: value });
   };
 
+  const createNewTopic = async (name) => {
+    try {
+      const response = await agent.Topics.create({ name: name }).then(() =>
+        setRefresh(true)
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+    }
+  };
+
+  const createNewLanguage = async (name) => {
+    try {
+      const response = await agent.Languages.create({ name: name });
+      setRefresh(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+    }
+  };
+
+  const addNewLanguageAsSelected = ({ id }) => {
+    setFieldContent({ ...fieldContent, languageId: id });
+  };
+
+  const addNewTopicAsSelected = ({ id }) => {
+    setFieldContent({ ...fieldContent, languageId: id });
+  };
+
   const submitContent = async () => {
     try {
-      const response = await agent.Articles.create(fieldContent);
-      console.log(response);
+      await agent.Articles.create(fieldContent);
     } catch (error) {
       console.log(error.response);
     } finally {
-      history.push("/articles");
+      console.log("done");
     }
   };
 
@@ -66,6 +97,8 @@ const CreateArticlePage = () => {
           <Typography variant="h5">Create article</Typography>
         </Box>
         <TextField
+          error
+          required
           label="Title"
           value={fieldContent.title}
           onChange={(e) => setContent("title", e.target.value)}
@@ -77,6 +110,7 @@ const CreateArticlePage = () => {
             value={fieldContent.topicId}
             handleSetContent={setContent}
           />
+          <FormModal name="Topic" handleCreateOption={createNewTopic} />
         </Box>
         <Box display="flex" alignItems="center" m={1}>
           <SelectField
@@ -85,11 +119,13 @@ const CreateArticlePage = () => {
             value={fieldContent.languageId}
             handleSetContent={setContent}
           />
+          <FormModal name="Language" handleCreateOption={createNewLanguage} />
         </Box>
 
         <TextField
           label="Content"
           multiline
+          required
           rows={5}
           value={fieldContent.content}
           onChange={(e) => setContent("content", e.target.value)}

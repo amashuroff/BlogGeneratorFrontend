@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Table from "../components/table/Table";
 import { Box, Button, Grid, Typography, Paper } from "@material-ui/core";
@@ -7,34 +7,12 @@ import { useArticleStyles } from "../styles/styles";
 import headcells from "../config/headcells";
 import agent from "../api/agent";
 import config from "../api/config";
-import ErrorToast from "../components/ErrorToast";
-import LinearLoader from "../components/LinearLoader";
 
 const TopicsPage = () => {
   const classes = useArticleStyles();
-  const [tableData, setTableData] = useState({});
-  const [isFetching, setIsFetching] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    fetchTopics();
-  }, []);
-
-  const fetchTopics = async () => {
-    try {
-      setIsFetching(true);
-      const data = await agent.Topics.list(config.Topics);
-      setTableData({ ...data, ...tableData });
-    } catch (error) {
-      setErrors({ ...errors, error });
-    } finally {
-      setIsFetching(false);
-    }
-  };
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      <ErrorToast error={errors.error?.message} />
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="space-between">
@@ -59,9 +37,9 @@ const TopicsPage = () => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <LinearLoader isFetching={isFetching} />
           <Table
-            data={tableData}
+            agent={agent.Topics}
+            config={config.Topics}
             headCells={headcells.Topics}
             disableEdit
             disableFilter

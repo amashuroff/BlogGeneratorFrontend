@@ -18,29 +18,62 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import THead from "./THead";
 import TableToolbar from "./TableToolbar";
-import { LinearProgress } from "@material-ui/core";
 import { useTableBodyStyles } from "../../styles/styles";
+import ErrorToast from "../ErrorToast";
+import LinearLoader from "../LinearLoader";
 
 const formatTime = (time) => {
   return moment(time).format("MMMM Do, YYYY");
 };
 
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index]);
+  }
+};
+
 const Table = ({
-  data,
   headCells,
+  agent,
+  tableConfig,
   disableEdit,
   disableView,
   disableFilter,
 }) => {
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
-  const [hovered, setHovered] = useState(null);
+
+  const [tableData, setTableData] = useState({});
+  const [config, setConfig] = useState(tableConfig);
+
   const [selectedItems, setSelectedItems] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [hovered, setHovered] = useState(null);
+
+  useEffect(() => {
+    fetchTableData();
+  }, [refresh, config]);
+
+  const fetchTableData = async () => {
+    try {
+      setIsFetching(true);
+      const data = await agent.list(config);
+      setTableData({ ...data });
+    } catch (error) {
+      console.log(error);
+      setErrors({ ...errors, error });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   const renderRows = () => {
-    if (!data.items) return null;
+    if (!tableData.items) return null;
 
-    return data.items.map((item, index) => {
+    return tableData.items.map((item, index) => {
       const isItemSelected = isSelected(item.id);
       return (
         <TableRow
@@ -110,30 +143,20 @@ const Table = ({
     return (
       <TablePagination
         component="div"
-        count={data.pager ? data.pager.total : 0}
-        rowsPerPage={data.pager ? data.pager.pageSize : ""}
-        page={data.pager ? data.pager.page : 0}
+        count={tableData.pager ? tableData.pager.total : 0}
+        rowsPerPage={tableData.pager ? tableData.pager.pageSize : ""}
+        page={tableData.pager ? tableData.pager.page : 0}
         // onChangePage={(event, page) => handleChangePage(page)}
         // onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
-        rowsPerPageOptions={data.pager ? [5, 25, 50, 100] : [""]}
+        rowsPerPageOptions={tableData.pager ? [5, 25, 50, 100] : [""]}
       />
-    );
-  };
-
-  const renderLoader = () => {
-    if (!data.loading) return null;
-
-    return (
-      <div>
-        <LinearProgress />
-      </div>
     );
   };
 
   // SELECTING ALL ITEMS/ITEM
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = data.items.map((n) => n.id);
+      const newSelected = tableData.items.map((n) => n.id);
       setSelectedItems(newSelected);
       return;
     }
@@ -162,14 +185,34 @@ const Table = ({
   const isSelected = (id) => selectedItems.indexOf(id) !== -1;
   // SELECTING ALL ITEMS/ITEM
 
+  // Deletion
+  const handleDeleteRows = async () => {
+    try {
+      asyncForEach(selectedItems, agent.deleteById).then(() =>
+        setRefresh(true)
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefresh(false);
+      cleanUpSelected();
+    }
+  };
+
+  const cleanUpSelected = () => {
+    setSelectedItems([]);
+  };
+
   return (
     <div className={classes.root}>
+      <ErrorToast error={errors.error?.message} />
       <Paper className={classes.paper}>
-        {renderLoader()}
+        <LinearLoader isFetching={isFetching} />
         <TableContainer>
           <TableToolbar
             numSelected={selectedItems.length}
             disableFilter={disableFilter}
+            deleteRows={handleDeleteRows}
           />
           <MaterialTable
             className={classes.table}
@@ -179,7 +222,7 @@ const Table = ({
             <THead
               numSelected={selectedItems.length}
               onSelectAllClick={handleSelectAllClick}
-              rowCount={data.items ? data.items.length : 0}
+              rowCount={tableData.items ? tableData.items.length : 0}
               headCells={headCells}
             />
             <TableBody>

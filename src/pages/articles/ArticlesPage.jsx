@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   Box,
@@ -10,39 +10,17 @@ import {
 } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
 import Table from "../../components/table/Table";
-import LinearLoader from "../../components/LinearLoader";
 import { useArticleStyles } from "../../styles/styles";
 
 import headcells from "../../config/headcells";
 import agent from "../../api/agent";
 import config from "../../api/config";
-import ErrorToast from "../../components/ErrorToast";
 
 const Articles = () => {
   const classes = useArticleStyles();
-  const [tableData, setTableData] = useState({});
-  const [isFetching, setIsFetching] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      setIsFetching(true);
-      const data = await agent.Articles.list(config.Articles);
-      setTableData({ ...data, ...tableData });
-    } catch (error) {
-      setErrors({ ...errors, error });
-    } finally {
-      setIsFetching(false);
-    }
-  };
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      <ErrorToast error={errors.error?.message} />
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="space-between">
@@ -88,8 +66,11 @@ const Articles = () => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <LinearLoader isFetching={isFetching} />
-          <Table data={tableData} headCells={headcells.Articles} />
+          <Table
+            headCells={headcells.Articles}
+            agent={agent.Articles}
+            tableConfig={config.Articles}
+          />
         </Grid>
       </Grid>
     </Paper>

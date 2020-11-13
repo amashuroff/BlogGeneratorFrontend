@@ -35,7 +35,7 @@ const Languages = {
 
 const Topics = {
   list: (params) => requests.get("/topic", { params: params }),
-  create: (data) => requests.post("/topic", data),
+  create: (name) => requests.post("/topic", name),
   update: (data) => requests.put("/topic", data),
   deleteById: (id) => requests.del("/topic/" + id),
 };
