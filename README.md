@@ -9,9 +9,10 @@ See: WIP.
   
   
 ### What i've learned: 
-  * How to implement CRUD data tables
+  * How to work with Material UI
+  * How to implement CRUD data tables / Sorting / handling Errors / Loading / Filtering
   * React Router
-  * JSS - Javascript Style Sheets: tool for writing consistent and conflict free CSS in JS.
-  * Type checking with PropTypes
+  * JSS - Javascript Style Sheets: tool for writing consistent and conflict free CSS in JS
   * How to organize file structure
+  * lodash common function
   
