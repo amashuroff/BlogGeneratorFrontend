@@ -1,12 +1,19 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Checkbox from "@material-ui/core/Checkbox";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 
-const THead = ({ onSelectAllClick, numSelected, rowCount, headCells }) => {
+const THead = ({
+  onSelectAllClick,
+  numSelected,
+  rowCount,
+  headCells,
+  order,
+  orderBy,
+  onSort,
+}) => {
   return (
     <TableHead>
       <TableRow>
@@ -19,8 +26,18 @@ const THead = ({ onSelectAllClick, numSelected, rowCount, headCells }) => {
         </TableCell>
 
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align="left">
-            <TableSortLabel>{headCell.label}</TableSortLabel>
+          <TableCell
+            key={headCell.id}
+            align="left"
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : "asc"}
+              onClick={() => onSort(headCell)}
+            >
+              {headCell.label}
+            </TableSortLabel>
           </TableCell>
         ))}
         <TableCell />

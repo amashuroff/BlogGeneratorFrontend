@@ -45,30 +45,36 @@ const Table = ({
 
   const [tableData, setTableData] = useState({});
   const [config, setConfig] = useState(tableConfig);
-
-  const [selectedItems, setSelectedItems] = useState([]);
   const [errors, setErrors] = useState({});
 
+  // Deletion
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  // Actions
   const [isFetching, setIsFetching] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [hovered, setHovered] = useState(null);
 
+  // Sorting
+  const [orderBy, setOrderBy] = useState(null);
+  const [order, setOrder] = useState("desc");
+  const [prevHeadCell, setPrevHeadCell] = useState("createdAt");
+
   useEffect(() => {
+    const fetchTableData = async () => {
+      try {
+        setIsFetching(true);
+        const data = await agent.list(config);
+        setTableData({ ...data });
+      } catch (error) {
+        console.log(error);
+        setErrors({ ...errors, error });
+      } finally {
+        setIsFetching(false);
+      }
+    };
     fetchTableData();
   }, [refresh, config]);
-
-  const fetchTableData = async () => {
-    try {
-      setIsFetching(true);
-      const data = await agent.list(config);
-      setTableData({ ...data });
-    } catch (error) {
-      console.log(error);
-      setErrors({ ...errors, error });
-    } finally {
-      setIsFetching(false);
-    }
-  };
 
   const renderRows = () => {
     if (!tableData.items) return null;
@@ -144,16 +150,16 @@ const Table = ({
       <TablePagination
         component="div"
         count={tableData.pager ? tableData.pager.total : 0}
-        rowsPerPage={tableData.pager ? tableData.pager.pageSize : ""}
+        rowsPerPage={tableData.pager ? tableData.pager.pageSize : 5}
         page={tableData.pager ? tableData.pager.page : 0}
-        // onChangePage={(event, page) => handleChangePage(page)}
-        // onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
+        onChangePage={(event, page) => handleChangePage(page)}
+        onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
         rowsPerPageOptions={tableData.pager ? [5, 25, 50, 100] : [""]}
       />
     );
   };
 
-  // SELECTING ALL ITEMS/ITEM
+  // Selection of items/item
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelected = tableData.items.map((n) => n.id);
@@ -183,7 +189,6 @@ const Table = ({
     setSelectedItems(newSelected);
   };
   const isSelected = (id) => selectedItems.indexOf(id) !== -1;
-  // SELECTING ALL ITEMS/ITEM
 
   // Deletion
   const handleDeleteRows = async () => {
@@ -203,11 +208,47 @@ const Table = ({
     setSelectedItems([]);
   };
 
+  // Pagination
+  const handleChangePage = (newPage) => {
+    setConfig({ ...config, page: newPage });
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPageSize = parseInt(event.target.value, 10);
+    setConfig({ ...config, pageSize: newPageSize });
+  };
+
+  // Sorting
+  const handleSortBy = (headCell) => {
+    let sortDir = 2;
+    if (prevHeadCell !== headCell.id) {
+      setPrevHeadCell(headCell.id);
+      setOrder("desc");
+      setOrderBy(headCell.id);
+    } else {
+      setOrder(order === "desc" ? "asc" : "desc");
+      sortDir = order === "desc" ? 1 : 2;
+    }
+    setConfig(newConfigWithSort(headCell.sortBy, sortDir));
+  };
+
+  const newConfigWithSort = (sortType, sortDir) => {
+    const newConfig = {};
+    for (const key in config) {
+      if (key.startsWith("sort")) {
+        newConfig[key] = 0;
+      } else {
+        newConfig[key] = config[key];
+      }
+    }
+    newConfig[sortType] = sortDir;
+    return newConfig;
+  };
+
   return (
     <div className={classes.root}>
+      <LinearLoader isFetching={isFetching} />
       <ErrorToast error={errors.error?.message} />
       <Paper className={classes.paper}>
-        <LinearLoader isFetching={isFetching} />
         <TableContainer>
           <TableToolbar
             numSelected={selectedItems.length}
@@ -224,6 +265,9 @@ const Table = ({
               onSelectAllClick={handleSelectAllClick}
               rowCount={tableData.items ? tableData.items.length : 0}
               headCells={headCells}
+              order={order}
+              orderBy={orderBy}
+              onSort={handleSortBy}
             />
             <TableBody>
               {/* {filter ? (

@@ -39,7 +39,7 @@ const TopicsPage = () => {
         <Grid item xs={12}>
           <Table
             agent={agent.Topics}
-            config={config.Topics}
+            tableConfig={config.Topics}
             headCells={headcells.Topics}
             disableEdit
             disableFilter

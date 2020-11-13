@@ -38,7 +38,7 @@ const LanguagesPage = () => {
         </Grid>
         <Grid item xs={12}>
           <Table
-            config={config.Languages}
+            tableConfig={config.Languages}
             headCells={headcells.Languages}
             agent={agent.Languages}
             disableEdit
