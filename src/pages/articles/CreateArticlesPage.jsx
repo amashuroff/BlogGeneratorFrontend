@@ -7,6 +7,13 @@ import SelectField from "../../components/SelectField";
 import FormModal from "../../components/FormModal";
 import ErrorToast from "../../components/ErrorToast";
 
+const validationMessages = {
+  title: "Please provide a Title",
+  topicId: "Please, provide a Topic",
+  languageId: "Please, provide a Language",
+  content: "Please, provide Content",
+};
+
 const CreateArticlePage = () => {
   const classes = createUpdateUploadStyles();
 
@@ -18,9 +25,21 @@ const CreateArticlePage = () => {
   });
   const [languages, setLanguages] = useState([]);
   const [topics, setTopics] = useState([]);
+
   const [refresh, setRefresh] = useState(false);
 
+  // Validation
+  const [validationErrors, setValidationErrors] = useState({
+    title: "",
+    topicId: "",
+    languageId: "",
+    content: "",
+  });
+
   const [errors, setErrors] = useState({});
+
+  console.log(validationErrors);
+  console.log(fieldContent);
 
   useEffect(() => {
     fetchLanguages();
@@ -32,7 +51,7 @@ const CreateArticlePage = () => {
       const { items } = await agent.Languages.list();
       setLanguages([...items]);
     } catch (error) {
-      console.log(error);
+      setErrors({ error });
     }
   };
 
@@ -41,7 +60,7 @@ const CreateArticlePage = () => {
       const { items } = await agent.Topics.list();
       setTopics([...items]);
     } catch (error) {
-      console.log(error);
+      setErrors({ error });
     }
   };
 
@@ -56,7 +75,7 @@ const CreateArticlePage = () => {
       );
       console.log(response);
     } catch (error) {
-      console.log(error);
+      setErrors({ error });
     } finally {
     }
   };
@@ -66,7 +85,7 @@ const CreateArticlePage = () => {
       const response = await agent.Languages.create({ name: name });
       setRefresh(true);
     } catch (error) {
-      console.log(error);
+      setErrors({ error });
     } finally {
     }
   };
@@ -79,70 +98,122 @@ const CreateArticlePage = () => {
     setFieldContent({ ...fieldContent, languageId: id });
   };
 
+  const areThereErrors = () => {
+    for (let key in validationErrors) {
+      if (validationErrors[key] !== "") return true;
+    }
+    for (let key in fieldContent) {
+      if (fieldContent[key] === "") return true;
+    }
+    return false;
+  };
+
   const submitContent = async () => {
+    validateOnSubmit();
+    if (areThereErrors) return;
+
     try {
       await agent.Articles.create(fieldContent);
     } catch (error) {
-      console.log(error.response);
+      setErrors({ error });
     } finally {
-      console.log("done");
+      console.log("done, push to articles");
     }
   };
 
-  return (
-    <Paper className={classes.form}>
-      <ErrorToast error={errors.error?.message} />
-      <form className={classes.root}>
-        <Box m={1}>
-          <Typography variant="h5">Create article</Typography>
-        </Box>
-        <TextField
-          error
-          required
-          label="Title"
-          value={fieldContent.title}
-          onChange={(e) => setContent("title", e.target.value)}
-        />
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectField
-            name="Topic"
-            items={topics}
-            value={fieldContent.topicId}
-            handleSetContent={setContent}
-          />
-          <FormModal name="Topic" handleCreateOption={createNewTopic} />
-        </Box>
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectField
-            name="Language"
-            items={languages}
-            value={fieldContent.languageId}
-            handleSetContent={setContent}
-          />
-          <FormModal name="Language" handleCreateOption={createNewLanguage} />
-        </Box>
+  const validate = (type, message) => {
+    if (fieldContent[type] === "") {
+      setValidationErrors({
+        ...validationErrors,
+        [type]: message,
+      });
+    } else {
+      setValidationErrors({
+        ...validationErrors,
+        [type]: "",
+      });
+    }
+  };
 
-        <TextField
-          label="Content"
-          multiline
-          required
-          rows={5}
-          value={fieldContent.content}
-          onChange={(e) => setContent("content", e.target.value)}
-        />
-        <div className={classes.button}>
+  const validateOnSubmit = () => {
+    let validationErrors = {};
+    for (let key in fieldContent) {
+      if (fieldContent[key] === "") {
+        validationErrors[key] = validationMessages[key];
+      } else {
+        validationErrors[key] = "";
+      }
+    }
+    setValidationErrors({ ...validationErrors });
+  };
+
+  return (
+    <Paper className={classes.paper} elevation={0}>
+      <Paper className={classes.form}>
+        <ErrorToast error={errors.error?.message} />
+        <form className={classes.root}>
           <Box m={1}>
-            <Button
-              disableElevation
-              variant="contained"
-              color="primary"
-              onClick={submitContent}
-            >
-              Create
-            </Button>
+            <Typography variant="h5">Create article</Typography>
           </Box>
-        </div>
-      </form>
+          <TextField
+            error={validationErrors.title !== ""}
+            required
+            label="Title"
+            value={fieldContent.title}
+            onChange={(e) => setContent("title", e.target.value)}
+            onBlur={() => validate("title", validationMessages.title)}
+            helperText={validationErrors.title}
+          />
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              validationMessage={validationMessages.topicId}
+              validate={validate}
+              error={validationErrors.topicId !== ""}
+              name="Topic"
+              items={topics}
+              value={fieldContent.topicId}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Topic" handleCreateOption={createNewTopic} />
+          </Box>
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              validationMessage={validationMessages.languageId}
+              validate={validate}
+              error={validationErrors.languageId !== ""}
+              name="Language"
+              items={languages}
+              value={fieldContent.languageId}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Language" handleCreateOption={createNewLanguage} />
+          </Box>
+
+          <TextField
+            error={validationErrors.content !== ""}
+            helperText={validationErrors.content}
+            onBlur={() => validate("content", validationMessages.content)}
+            label="Content"
+            multiline
+            required
+            rows={5}
+            value={fieldContent.content}
+            onChange={(e) => setContent("content", e.target.value)}
+          />
+          <div className={classes.button}>
+            <Box m={1}>
+              <Button
+                disableElevation
+                variant="contained"
+                color="primary"
+                onClick={submitContent}
+              >
+                Create
+              </Button>
+            </Box>
+          </div>
+        </form>
+      </Paper>
     </Paper>
   );
 };

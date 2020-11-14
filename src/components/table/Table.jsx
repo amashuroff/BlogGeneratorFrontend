@@ -56,7 +56,7 @@ const Table = ({
   const [hovered, setHovered] = useState(null);
 
   // Sorting
-  const [orderBy, setOrderBy] = useState(null);
+  const [orderBy, setOrderBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
   const [prevHeadCell, setPrevHeadCell] = useState("createdAt");
 

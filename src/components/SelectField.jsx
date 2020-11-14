@@ -9,7 +9,15 @@ import {
 } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../styles/styles";
 
-const SelectField = ({ name, items, value, handleSetContent }) => {
+const SelectField = ({
+  name,
+  items,
+  value,
+  handleSetContent,
+  validate,
+  validationMessage,
+  error,
+}) => {
   const classes = createUpdateUploadStyles();
 
   const renderMenuItems = () => {
@@ -25,22 +33,26 @@ const SelectField = ({ name, items, value, handleSetContent }) => {
   const correctFieldName = `${name.charAt(0).toLowerCase() + name.slice(1)}Id`;
 
   return (
-    <FormControl variant="standard" required className={classes.select}>
+    <FormControl
+      variant="standard"
+      required
+      className={classes.select}
+      error={error}
+    >
       <InputLabel id={`create-${name}-label`}>{name}</InputLabel>
       <Select
-        required
         select="true"
         value={value}
-        onChange={(e) => handleSetContent(correctFieldName, e.target.value)}
+        onChange={(e) => {
+          handleSetContent(correctFieldName, e.target.value);
+        }}
+        onBlur={() => validate(correctFieldName, validationMessage)}
       >
         {renderMenuItems()}
       </Select>
+      <FormHelperText>{error ? validationMessage : null}</FormHelperText>
     </FormControl>
   );
 };
 
 export default SelectField;
-
-// error={errors[id] && rowContent[id] === "" ? true : false}
-
-// <FormHelperText>{errors[id]}</FormHelperText>

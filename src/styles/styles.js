@@ -171,6 +171,12 @@ export const createUpdateUploadStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
+  paper: {
+    padding: "40px",
+    backgroundColor: "#F6F9FC",
+    maxHeight: "85vh",
+    height: "100%",
+  },
   select: {
     width: "100%",
   },
