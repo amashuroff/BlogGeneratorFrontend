@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import agent from "../../api/agent";
+import { connect } from "react-redux";
+import {
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+} from "../../state/actions";
 import history from "../../api/history";
 import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
@@ -14,8 +21,9 @@ const validationMessages = {
   content: "Please, provide Content",
 };
 
-const CreateArticlePage = () => {
+const CreateArticlePage = (props) => {
   const classes = createUpdateUploadStyles();
+  const [errors, setErrors] = useState({});
 
   const [fieldContent, setFieldContent] = useState({
     title: "",
@@ -23,10 +31,39 @@ const CreateArticlePage = () => {
     topicId: "",
     languageId: "",
   });
-  const [languages, setLanguages] = useState([]);
-  const [topics, setTopics] = useState([]);
 
-  const [refresh, setRefresh] = useState(false);
+  useEffect(() => {
+    props.getLanguages();
+    if (props.languages.newLanguage) {
+      setFieldContent({
+        ...fieldContent,
+        languageId: props.languages.newLanguage.id,
+      });
+    }
+  }, [props.languages.newLanguage]);
+
+  useEffect(() => {
+    props.getTopics();
+  }, [props.topics.newTopic]);
+
+  useEffect(() => {
+    // решение проблемы/разобрать эту требедень
+    if (
+      props.topics.newTopic &&
+      props.topics.items.filter(
+        (topic) => topic.id === props.topics.newTopic.id
+      ).length > 0
+    ) {
+      setFieldContent({
+        ...fieldContent,
+        topicId: props.topics.newTopic.id,
+      });
+    }
+  }, [props.topics]);
+
+  const setContent = (type, value) => {
+    setFieldContent({ ...fieldContent, [type]: value });
+  };
 
   // Validation
   const [validationErrors, setValidationErrors] = useState({
@@ -36,68 +73,7 @@ const CreateArticlePage = () => {
     content: "",
   });
 
-  const [errors, setErrors] = useState({});
-
-  console.log(validationErrors);
-  console.log(fieldContent);
-
-  useEffect(() => {
-    fetchLanguages();
-    fetchTopics();
-  }, [refresh]);
-
-  const fetchLanguages = async () => {
-    try {
-      const { items } = await agent.Languages.list();
-      setLanguages([...items]);
-    } catch (error) {
-      setErrors({ error });
-    }
-  };
-
-  const fetchTopics = async () => {
-    try {
-      const { items } = await agent.Topics.list();
-      setTopics([...items]);
-    } catch (error) {
-      setErrors({ error });
-    }
-  };
-
-  const setContent = (type, value) => {
-    setFieldContent({ ...fieldContent, [type]: value });
-  };
-
-  const createNewTopic = async (name) => {
-    try {
-      const response = await agent.Topics.create({ name: name }).then(() =>
-        setRefresh(true)
-      );
-      console.log(response);
-    } catch (error) {
-      setErrors({ error });
-    } finally {
-    }
-  };
-
-  const createNewLanguage = async (name) => {
-    try {
-      const response = await agent.Languages.create({ name: name });
-      setRefresh(true);
-    } catch (error) {
-      setErrors({ error });
-    } finally {
-    }
-  };
-
-  const addNewLanguageAsSelected = ({ id }) => {
-    setFieldContent({ ...fieldContent, languageId: id });
-  };
-
-  const addNewTopicAsSelected = ({ id }) => {
-    setFieldContent({ ...fieldContent, languageId: id });
-  };
-
+  // validation
   const areThereErrors = () => {
     for (let key in validationErrors) {
       if (validationErrors[key] !== "") return true;
@@ -108,6 +84,7 @@ const CreateArticlePage = () => {
     return false;
   };
 
+  // validate без стейта
   const submitContent = async () => {
     validateOnSubmit();
     if (areThereErrors) return;
@@ -161,38 +138,34 @@ const CreateArticlePage = () => {
             label="Title"
             value={fieldContent.title}
             onChange={(e) => setContent("title", e.target.value)}
-            onBlur={() => validate("title", validationMessages.title)}
             helperText={validationErrors.title}
           />
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
               validationMessage={validationMessages.topicId}
-              validate={validate}
               error={validationErrors.topicId !== ""}
               name="Topic"
-              items={topics}
+              items={props.topics.items}
               value={fieldContent.topicId}
               handleSetContent={setContent}
             />
-            <FormModal name="Topic" handleCreateOption={createNewTopic} />
+            <FormModal name="Topic" handleCreateOption={props.createTopic} />
           </Box>
           <Box display="flex" alignItems="center" m={1}>
-            <SelectField
+            {/* <SelectField
               validationMessage={validationMessages.languageId}
-              validate={validate}
               error={validationErrors.languageId !== ""}
               name="Language"
               items={languages}
               value={fieldContent.languageId}
               handleSetContent={setContent}
             />
-            <FormModal name="Language" handleCreateOption={createNewLanguage} />
+            <FormModal name="Language" handleCreateOption={createNewLanguage} /> */}
           </Box>
 
           <TextField
             error={validationErrors.content !== ""}
             helperText={validationErrors.content}
-            onBlur={() => validate("content", validationMessages.content)}
             label="Content"
             multiline
             required
@@ -218,76 +191,16 @@ const CreateArticlePage = () => {
   );
 };
 
-export default CreateArticlePage;
+const mapStateToProps = (state) => {
+  return {
+    languages: state.languages,
+    topics: state.topics,
+  };
+};
 
-{
-  /* <Box m={1}>
-          <Typography variant="h5">Create article</Typography>
-        </Box>
-
-        <TextField
-          error={errors.Title && rowContent.title === "" ? true : false}
-          required
-          id="title-create"
-          label="Article Title"
-          variant="standard"
-          value={rowContent.title}
-          helperText={errors.Title}
-          onChange={(e) =>
-            setRowContent({ ...rowContent, title: e.target.value })
-          }
-        ></TextField>
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectRow
-            name="topic"
-            handleSetRowContent={setRowContent}
-            rowContent={rowContent}
-            items={topics}
-            errors={errors}
-            id={"TopicId"}
-          />
-          <FormDialogAdd name="Topic" handleAddNewOption={handleAddNewTopic} />
-        </Box>
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectRow
-            name="language"
-            handleSetRowContent={setRowContent}
-            rowContent={rowContent}
-            items={languages}
-            errors={errors}
-            id={"LanguageId"}
-          />
-          <FormDialogAdd
-            name="Language"
-            handleAddNewOption={handleAddNewLanguage}
-          />
-        </Box>
-        <TextField
-          error={errors.Content && rowContent.content === "" ? true : false}
-          required
-          id="content-create"
-          label="Some content inside..."
-          variant="standard"
-          multiline
-          rows={5}
-          value={rowContent.content}
-          helperText={errors.Content}
-          onChange={(e) =>
-            setRowContent({ ...rowContent, content: e.target.value })
-          }
-        ></TextField>
-        <div className={classes.button}>
-          <Box m={1}>
-            <Button
-              disableElevation
-              variant="contained"
-              color="primary"
-              onClick={(e) => createNewRow(e)}
-              component={Link}
-              to={"/articles"}
-            >
-              Create
-            </Button>
-          </Box>
-        </div> */
-}
+export default connect(mapStateToProps, {
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+})(CreateArticlePage);

@@ -1,0 +1,5 @@
+export const GET_TOPICS = "GET_TOPICS";
+export const GET_LANGUAGES = "GET_LANGUAGES";
+
+export const CREATE_TOPIC = "CREATE_TOPIC";
+export const CREATE_LANGUAGE = "CREATE_LANGUAGE";

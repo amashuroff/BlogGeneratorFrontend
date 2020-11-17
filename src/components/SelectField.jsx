@@ -14,7 +14,6 @@ const SelectField = ({
   items,
   value,
   handleSetContent,
-  validate,
   validationMessage,
   error,
 }) => {
@@ -46,7 +45,6 @@ const SelectField = ({
         onChange={(e) => {
           handleSetContent(correctFieldName, e.target.value);
         }}
-        onBlur={() => validate(correctFieldName, validationMessage)}
       >
         {renderMenuItems()}
       </Select>
