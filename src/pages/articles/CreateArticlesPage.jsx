@@ -8,6 +8,7 @@ import {
   createLanguage,
 } from "../../state/actions";
 import history from "../../api/history";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
 import SelectField from "../../components/SelectField";
@@ -21,7 +22,14 @@ const validationMessages = {
   content: "Please, provide Content",
 };
 
-const CreateArticlePage = (props) => {
+const CreateArticlePage = ({
+  topics,
+  languages,
+  getTopics,
+  getLanguages,
+  createTopic,
+  createLanguage,
+}) => {
   const classes = createUpdateUploadStyles();
   const [errors, setErrors] = useState({});
 
@@ -32,34 +40,41 @@ const CreateArticlePage = (props) => {
     languageId: "",
   });
 
+  // When new topic/language is created, refresh the list of topics
   useEffect(() => {
-    props.getLanguages();
-    if (props.languages.newLanguage) {
-      setFieldContent({
-        ...fieldContent,
-        languageId: props.languages.newLanguage.id,
-      });
-    }
-  }, [props.languages.newLanguage]);
+    getLanguages();
+  }, [languages.newLanguage]);
 
+  // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
   useEffect(() => {
-    props.getTopics();
-  }, [props.topics.newTopic]);
-
-  useEffect(() => {
-    // решение проблемы/разобрать эту требедень
     if (
-      props.topics.newTopic &&
-      props.topics.items.filter(
-        (topic) => topic.id === props.topics.newTopic.id
+      languages.newLanguage &&
+      languages.items.filter(
+        (language) => language.id === languages.newLanguage.id
       ).length > 0
     ) {
       setFieldContent({
         ...fieldContent,
-        topicId: props.topics.newTopic.id,
+        languageId: languages.newLanguage.id,
       });
     }
-  }, [props.topics]);
+  }, [languages]);
+
+  useEffect(() => {
+    getTopics();
+  }, [topics.newTopic]);
+
+  useEffect(() => {
+    if (
+      topics.newTopic &&
+      topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
+    ) {
+      setFieldContent({
+        ...fieldContent,
+        topicId: topics.newTopic.id,
+      });
+    }
+  }, [topics]);
 
   const setContent = (type, value) => {
     setFieldContent({ ...fieldContent, [type]: value });
@@ -73,22 +88,7 @@ const CreateArticlePage = (props) => {
     content: "",
   });
 
-  // validation
-  const areThereErrors = () => {
-    for (let key in validationErrors) {
-      if (validationErrors[key] !== "") return true;
-    }
-    for (let key in fieldContent) {
-      if (fieldContent[key] === "") return true;
-    }
-    return false;
-  };
-
-  // validate без стейта
   const submitContent = async () => {
-    validateOnSubmit();
-    if (areThereErrors) return;
-
     try {
       await agent.Articles.create(fieldContent);
     } catch (error) {
@@ -98,79 +98,54 @@ const CreateArticlePage = (props) => {
     }
   };
 
-  const validate = (type, message) => {
-    if (fieldContent[type] === "") {
-      setValidationErrors({
-        ...validationErrors,
-        [type]: message,
-      });
-    } else {
-      setValidationErrors({
-        ...validationErrors,
-        [type]: "",
-      });
-    }
-  };
-
-  const validateOnSubmit = () => {
-    let validationErrors = {};
-    for (let key in fieldContent) {
-      if (fieldContent[key] === "") {
-        validationErrors[key] = validationMessages[key];
-      } else {
-        validationErrors[key] = "";
-      }
-    }
-    setValidationErrors({ ...validationErrors });
-  };
-
   return (
     <Paper className={classes.paper} elevation={0}>
       <Paper className={classes.form}>
         <ErrorToast error={errors.error?.message} />
-        <form className={classes.root}>
+        <ValidatorForm
+          className={classes.root}
+          onSubmit={submitContent}
+          onError={(errors) => console.log(errors)} // change
+        >
           <Box m={1}>
             <Typography variant="h5">Create article</Typography>
           </Box>
-          <TextField
-            error={validationErrors.title !== ""}
-            required
+          <TextValidator
             label="Title"
+            name="title"
             value={fieldContent.title}
+            validators={["required"]}
+            errorMessages={["This field is required"]}
             onChange={(e) => setContent("title", e.target.value)}
-            helperText={validationErrors.title}
           />
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
-              validationMessage={validationMessages.topicId}
-              error={validationErrors.topicId !== ""}
               name="Topic"
-              items={props.topics.items}
+              items={topics.items}
               value={fieldContent.topicId}
               handleSetContent={setContent}
             />
-            <FormModal name="Topic" handleCreateOption={props.createTopic} />
+            <FormModal name="Topic" handleCreateOption={createTopic} />
           </Box>
           <Box display="flex" alignItems="center" m={1}>
-            {/* <SelectField
-              validationMessage={validationMessages.languageId}
-              error={validationErrors.languageId !== ""}
+            <SelectField
               name="Language"
-              items={languages}
+              items={languages.items}
               value={fieldContent.languageId}
               handleSetContent={setContent}
             />
-            <FormModal name="Language" handleCreateOption={createNewLanguage} /> */}
+            <FormModal name="Language" handleCreateOption={createLanguage} />
           </Box>
 
-          <TextField
-            error={validationErrors.content !== ""}
-            helperText={validationErrors.content}
-            label="Content"
+          <TextValidator
             multiline
             required
             rows={5}
+            label="Content"
+            name="content"
             value={fieldContent.content}
+            validators={["required"]}
+            errorMessages={["This field is required"]}
             onChange={(e) => setContent("content", e.target.value)}
           />
           <div className={classes.button}>
@@ -179,13 +154,13 @@ const CreateArticlePage = (props) => {
                 disableElevation
                 variant="contained"
                 color="primary"
-                onClick={submitContent}
+                type="sumbit"
               >
                 Create
               </Button>
             </Box>
           </div>
-        </form>
+        </ValidatorForm>
       </Paper>
     </Paper>
   );

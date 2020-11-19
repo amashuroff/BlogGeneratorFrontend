@@ -1,22 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../styles/styles";
 
-const SelectField = ({
-  name,
-  items,
-  value,
-  handleSetContent,
-  validationMessage,
-  error,
-}) => {
+const SelectField = ({ name, items, value, handleSetContent }) => {
   const classes = createUpdateUploadStyles();
 
   const renderMenuItems = () => {
@@ -48,7 +35,6 @@ const SelectField = ({
       >
         {renderMenuItems()}
       </Select>
-      <FormHelperText>{error ? validationMessage : null}</FormHelperText>
     </FormControl>
   );
 };
