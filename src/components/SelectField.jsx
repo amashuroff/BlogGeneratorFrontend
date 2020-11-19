@@ -19,12 +19,7 @@ const SelectField = ({ name, items, value, handleSetContent }) => {
   const correctFieldName = `${name.charAt(0).toLowerCase() + name.slice(1)}Id`;
 
   return (
-    <FormControl
-      variant="standard"
-      required
-      className={classes.select}
-      error={error}
-    >
+    <FormControl variant="standard" required className={classes.select}>
       <InputLabel id={`create-${name}-label`}>{name}</InputLabel>
       <Select
         select="true"

@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import {
@@ -17,7 +18,7 @@ import headcells from "../../config/headcells";
 import agent from "../../api/agent";
 import config from "../../api/config";
 
-const Articles = () => {
+const Articles = ({ newArticle }) => {
   const classes = useArticleStyles();
 
   return (
@@ -68,6 +69,7 @@ const Articles = () => {
         </Grid>
         <Grid item xs={12}>
           <Table
+            justCreatedRow={newArticle}
             headCells={headcells.Articles}
             agent={agent.Articles}
             tableConfig={config.Articles}
@@ -77,5 +79,10 @@ const Articles = () => {
     </Paper>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    newArticle: state.articles.newArticle,
+  };
+};
 
-export default Articles;
+export default connect(mapStateToProps, null)(Articles);

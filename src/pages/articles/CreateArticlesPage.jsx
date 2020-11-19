@@ -6,6 +6,7 @@ import {
   getTopics,
   createTopic,
   createLanguage,
+  addNewArticleToStore,
 } from "../../state/actions";
 import history from "../../api/history";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
@@ -29,6 +30,7 @@ const CreateArticlePage = ({
   getLanguages,
   createTopic,
   createLanguage,
+  addNewArticleToStore,
 }) => {
   const classes = createUpdateUploadStyles();
   const [errors, setErrors] = useState({});
@@ -90,11 +92,11 @@ const CreateArticlePage = ({
 
   const submitContent = async () => {
     try {
-      await agent.Articles.create(fieldContent);
+      const newArticle = await agent.Articles.create(fieldContent);
+      addNewArticleToStore(newArticle);
+      history.push("/articles");
     } catch (error) {
       setErrors({ error });
-    } finally {
-      console.log("done, push to articles");
     }
   };
 
@@ -105,17 +107,16 @@ const CreateArticlePage = ({
         <ValidatorForm
           className={classes.root}
           onSubmit={submitContent}
-          onError={(errors) => console.log(errors)} // change
+          onError={(errors) => console.log(errors)}
         >
           <Box m={1}>
             <Typography variant="h5">Create article</Typography>
           </Box>
           <TextValidator
+            required
             label="Title"
             name="title"
             value={fieldContent.title}
-            validators={["required"]}
-            errorMessages={["This field is required"]}
             onChange={(e) => setContent("title", e.target.value)}
           />
           <Box display="flex" alignItems="center" m={1}>
@@ -144,8 +145,6 @@ const CreateArticlePage = ({
             label="Content"
             name="content"
             value={fieldContent.content}
-            validators={["required"]}
-            errorMessages={["This field is required"]}
             onChange={(e) => setContent("content", e.target.value)}
           />
           <div className={classes.button}>
@@ -154,7 +153,7 @@ const CreateArticlePage = ({
                 disableElevation
                 variant="contained"
                 color="primary"
-                type="sumbit"
+                type="submit"
               >
                 Create
               </Button>
@@ -178,4 +177,5 @@ export default connect(mapStateToProps, {
   getTopics,
   createTopic,
   createLanguage,
+  addNewArticleToStore,
 })(CreateArticlePage);

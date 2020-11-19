@@ -3,7 +3,7 @@ import { CREATE_TOPIC, GET_TOPICS } from "../actions/types";
 const INITIAL_STATE = {
   items: [],
   pager: {},
-  newTopic: "",
+  newTopic: null,
 };
 
 export const topicsReducer = (state = INITIAL_STATE, action) => {

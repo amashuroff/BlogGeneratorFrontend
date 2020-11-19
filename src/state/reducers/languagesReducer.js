@@ -3,7 +3,7 @@ import { CREATE_LANGUAGE, GET_LANGUAGES } from "../actions/types";
 const INITIAL_STATE = {
   items: [],
   pager: {},
-  newLanguage: "",
+  newLanguage: null,
 };
 
 export const languagesReducer = (state = INITIAL_STATE, action) => {

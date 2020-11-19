@@ -4,6 +4,7 @@ import {
   GET_LANGUAGES,
   CREATE_TOPIC,
   CREATE_LANGUAGE,
+  ADD_NEW_ARTICLE_TO_STORE,
 } from "../actions/types";
 
 export const getTopics = () => async (dispatch) => {
@@ -40,4 +41,11 @@ export const createLanguage = (name) => async (dispatch) => {
     type: CREATE_LANGUAGE,
     payload: newLanguage,
   });
+};
+
+export const addNewArticleToStore = (article) => {
+  return {
+    type: ADD_NEW_ARTICLE_TO_STORE,
+    payload: article,
+  };
 };

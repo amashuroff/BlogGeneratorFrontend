@@ -162,6 +162,15 @@ export const useTableBodyStyles = makeStyles((theme) => ({
   cellWithIcons: {
     padding: "2px 16px 2px 8px",
   },
+
+  "@keyframes fadeOut": {
+    from: { "background-color": "#FFC300" },
+    to: { "background-color": "#FFF" },
+  },
+  justCreatedRow: {
+    animationName: "$fadeOut",
+    animationDuration: "3s",
+  },
 }));
 
 export const createUpdateUploadStyles = makeStyles((theme) => ({

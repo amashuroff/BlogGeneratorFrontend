@@ -39,6 +39,7 @@ const Table = ({
   disableEdit,
   disableView,
   disableFilter,
+  justCreatedRow,
 }) => {
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
@@ -81,12 +82,15 @@ const Table = ({
 
     return tableData.items.map((item, index) => {
       const isItemSelected = isSelected(item.id);
+      const isItemJustCreated = item.id === justCreatedRow?.id;
+
       return (
         <TableRow
           key={`row-${index}`}
           hover
           onMouseLeave={() => setHovered(null)}
           onMouseOver={() => setHovered(item.id)}
+          className={isItemJustCreated ? classes.justCreatedRow : null}
         >
           <TableCell padding="checkbox">
             <Checkbox
