@@ -8,7 +8,13 @@ import IconButton from "@material-ui/core/IconButton";
 import { Box, Icon } from "@material-ui/core";
 import { useToolbarStyles } from "../../styles/styles";
 
-const TableToolbar = ({ numSelected, disableFilter, deleteRows }) => {
+const TableToolbar = ({
+  numSelected,
+  disableFilter,
+  deleteRows,
+  openFilter,
+  setOpenFilter,
+}) => {
   const classes = useToolbarStyles();
 
   const renderToolbar = () => {
@@ -44,10 +50,9 @@ const TableToolbar = ({ numSelected, disableFilter, deleteRows }) => {
   };
 
   const renderFilter = () => {
-    const openFilter = false;
     if (!openFilter) {
       return (
-        <IconButton>
+        <IconButton onClick={() => setOpenFilter((currFilter) => !currFilter)}>
           <Icon>
             <img src="./img/openFilterIcon.svg" alt="open filter icon" />
           </Icon>
@@ -55,7 +60,7 @@ const TableToolbar = ({ numSelected, disableFilter, deleteRows }) => {
       );
     }
     return (
-      <IconButton>
+      <IconButton onClick={() => setOpenFilter((currFilter) => !currFilter)}>
         <Icon>
           <img src="./img/closeFilterIcon.svg" alt="open filter icon" />
         </Icon>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
+import { formatTime, asyncForEach, initFilterFromHeadCells } from "../../utils";
 
 import MaterialTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -21,16 +21,8 @@ import TableToolbar from "./TableToolbar";
 import { useTableBodyStyles } from "../../styles/styles";
 import ErrorToast from "../ErrorToast";
 import LinearLoader from "../LinearLoader";
-
-const formatTime = (time) => {
-  return moment(time).format("MMMM Do, YYYY");
-};
-
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index]);
-  }
-};
+import FilterInput from "../FilterInput";
+import { Button } from "@material-ui/core";
 
 const Table = ({
   headCells,
@@ -60,6 +52,12 @@ const Table = ({
   const [orderBy, setOrderBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
   const [prevHeadCell, setPrevHeadCell] = useState("createdAt");
+
+  // Filter
+  const [openFilter, setOpenFilter] = useState(false);
+  const [filterState, setFilterState] = useState(
+    initFilterFromHeadCells(headCells)
+  );
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -163,6 +161,37 @@ const Table = ({
     );
   };
 
+  const renderFilter = () => {
+    if (!openFilter) return null;
+
+    return (
+      <TableRow>
+        <TableCell />
+        {headCells.map((cell) => {
+          return (
+            <TableCell key={`filter-${cell.id}`}>
+              <FilterInput
+                cell={cell}
+                setFilterState={handleSetFilterState}
+                filterState={filterState}
+              />
+            </TableCell>
+          );
+        })}
+        <TableCell>
+          <Button
+            disableElevation
+            variant="contained"
+            color="primary"
+            onClick={clearFields}
+          >
+            Clear fields
+          </Button>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
   // Selection of items/item
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -248,6 +277,24 @@ const Table = ({
     return newConfig;
   };
 
+  // Filter
+  const handleSetFilterState = (input, filter) => {
+    setFilterState({ ...filterState, [filter]: input });
+  };
+  const clearFields = () => {
+    setFilterState(initFilterFromHeadCells(headCells));
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setConfig({ ...config, ...filterState });
+    }, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [filterState]);
+
   return (
     <div className={classes.root}>
       <LinearLoader isFetching={isFetching} />
@@ -258,6 +305,8 @@ const Table = ({
             numSelected={selectedItems.length}
             disableFilter={disableFilter}
             deleteRows={handleDeleteRows}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
           />
           <MaterialTable
             className={classes.table}
@@ -274,30 +323,7 @@ const Table = ({
               onSort={handleSortBy}
             />
             <TableBody>
-              {/* {filter ? (
-                <TableRow>
-                  <TableCell />
-                  {headCells.map((cell) => {
-                    return (
-                      <TableCell key={`filter-${cell.id}`}>
-                        <FilterInput
-                          cell={cell}
-                          handleSetFilterState={handleSetFilterState}
-                          filterState={filterState}
-                        />
-                      </TableCell>
-                    );
-                  })}
-                  <TableCell>
-                    <IconButton
-                      aria-label="close-delete"
-                      onClick={() => handleToggleFilter()}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ) : null} */}
+              {renderFilter()}
               {renderRows()}
             </TableBody>
           </MaterialTable>
