@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 import history from "../api/history";
 import { CssBaseline } from "@material-ui/core";
 
@@ -9,6 +9,7 @@ import ArticlesPage from "../pages/articles/ArticlesPage";
 import CreateArticlesPage from "../pages/articles/CreateArticlesPage";
 import LanguagesPage from "../pages/LanguagesPage";
 import TopicsPage from "../pages/TopicsPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 function App() {
   return (
@@ -31,6 +32,9 @@ function App() {
 
             <Route path="/languages" exact component={LanguagesPage} />
             <Route path="/languages/new" />
+
+            <Route path="/404" component={NotFoundPage} />
+            <Redirect to="/404" />
           </Switch>
         </AppWrapper>
       </Router>
