@@ -2,6 +2,10 @@ const Articles = {
   page: 0,
   pageSize: 5,
   sortByCreatedAt: 2,
+  filterByTitle: "",
+  filterByTopic: "",
+  filterByLanguage: "",
+  filterByCreatedDate: null,
 };
 
 const Topics = {

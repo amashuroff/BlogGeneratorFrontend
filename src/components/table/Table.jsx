@@ -10,11 +10,11 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import TablePagination from "@material-ui/core/TablePagination";
+import { Button } from "@material-ui/core";
 
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import CreateIcon from "@material-ui/icons/Create";
-import CloseIcon from "@material-ui/icons/Close";
 
 import THead from "./THead";
 import TableToolbar from "./TableToolbar";
@@ -22,7 +22,6 @@ import { useTableBodyStyles } from "../../styles/styles";
 import ErrorToast from "../ErrorToast";
 import LinearLoader from "../LinearLoader";
 import FilterInput from "../FilterInput";
-import { Button } from "@material-ui/core";
 
 const Table = ({
   headCells,
@@ -45,7 +44,7 @@ const Table = ({
 
   // Actions
   const [isFetching, setIsFetching] = useState(false);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(null);
   const [hovered, setHovered] = useState(null);
 
   // Sorting
@@ -65,6 +64,7 @@ const Table = ({
         setIsFetching(true);
         const data = await agent.list(config);
         setTableData({ ...data });
+        console.log(tableData);
       } catch (error) {
         console.log(error);
         setErrors({ ...errors, error });
@@ -226,16 +226,27 @@ const Table = ({
   // Deletion
   const handleDeleteRows = async () => {
     try {
-      asyncForEach(selectedItems, agent.deleteById).then(() =>
-        setRefresh(true)
-      );
+      await asyncForEach(selectedItems, agent.deleteById);
+      setRefresh(true);
     } catch (error) {
       console.log(error);
     } finally {
-      setRefresh(false);
       cleanUpSelected();
+      setRefresh(false);
     }
   };
+
+  // handle out of range page after deletion
+  useEffect(() => {
+    if (tableData.items?.length === 0 && tableData.pager?.page > 0) {
+      const checkPageRange = () => {
+        if (tableData.items?.length === 0) {
+          setConfig({ ...config, page: tableData.pager.page - 1 });
+        }
+      };
+      checkPageRange();
+    }
+  });
 
   const cleanUpSelected = () => {
     setSelectedItems([]);

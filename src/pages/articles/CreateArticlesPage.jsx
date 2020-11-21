@@ -94,7 +94,7 @@ const CreateArticlePage = ({
     try {
       const newArticle = await agent.Articles.create(fieldContent);
       addNewArticleToStore(newArticle);
-      history.push("/articles");
+      // history.push("/articles");
     } catch (error) {
       setErrors({ error });
     }
