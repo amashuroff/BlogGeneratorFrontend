@@ -10,18 +10,11 @@ import {
 } from "../../state/actions";
 import history from "../../api/history";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
 import SelectField from "../../components/SelectField";
 import FormModal from "../../components/FormModal";
 import ErrorToast from "../../components/ErrorToast";
-
-const validationMessages = {
-  title: "Please provide a Title",
-  topicId: "Please, provide a Topic",
-  languageId: "Please, provide a Language",
-  content: "Please, provide Content",
-};
 
 const CreateArticlePage = ({
   topics,
@@ -82,19 +75,11 @@ const CreateArticlePage = ({
     setFieldContent({ ...fieldContent, [type]: value });
   };
 
-  // Validation
-  const [validationErrors, setValidationErrors] = useState({
-    title: "",
-    topicId: "",
-    languageId: "",
-    content: "",
-  });
-
   const submitContent = async () => {
     try {
       const newArticle = await agent.Articles.create(fieldContent);
       addNewArticleToStore(newArticle);
-      // history.push("/articles");
+      history.push("/articles");
     } catch (error) {
       setErrors({ error });
     }

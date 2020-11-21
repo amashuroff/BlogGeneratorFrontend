@@ -103,7 +103,7 @@ const Table = ({
           <TableCell align="right" className={classes.cellWithIcons}>
             <IconButton
               component={Link}
-              to={`${pathname}/update/${item.id}`}
+              to={`${pathname}/update/:id${item.id}`}
               className={
                 !disableEdit && hovered === item.id
                   ? classes.iconShow

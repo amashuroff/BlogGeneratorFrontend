@@ -10,6 +10,7 @@ import CreateArticlesPage from "../pages/articles/CreateArticlesPage";
 import LanguagesPage from "../pages/LanguagesPage";
 import TopicsPage from "../pages/TopicsPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import ViewArticlePage from "../pages/articles/ViewArticlePage";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
 
             <Route path="/articles" exact component={ArticlesPage} />
             <Route path="/articles/new" component={CreateArticlesPage} />
-            <Route path="/articles/show/:id" />
+            <Route path="/articles/view/:id" component={ViewArticlePage} />
             <Route path="/articles/edit/:id" />
             <Route path="/articles/upload" />
 
