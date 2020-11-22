@@ -11,6 +11,7 @@ import LanguagesPage from "../pages/LanguagesPage";
 import TopicsPage from "../pages/TopicsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ViewArticlePage from "../pages/articles/ViewArticlePage";
+import UpdateArticlePage from "../pages/articles/UpdateArticlePage";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
             <Route path="/articles" exact component={ArticlesPage} />
             <Route path="/articles/new" component={CreateArticlesPage} />
             <Route path="/articles/view/:id" component={ViewArticlePage} />
-            <Route path="/articles/edit/:id" />
+            <Route path="/articles/update/:id" component={UpdateArticlePage} />
             <Route path="/articles/upload" />
 
             <Route path="/topics" exact component={TopicsPage} />

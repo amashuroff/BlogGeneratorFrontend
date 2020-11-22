@@ -1,243 +1,177 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useHistory, Link } from "react-router-dom";
+import agent from "../../api/agent";
+import { connect } from "react-redux";
+import history from "../../api/history";
 import {
-  Box,
-  Button,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  Paper,
-} from "@material-ui/core";
-import FormDialogAdd from "../buttons-forms/FormDialogAdd";
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+  addNewArticleToStore,
+} from "../../state/actions";
+import { Box, Button, Typography, Paper } from "@material-ui/core";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
+import SelectField from "../../components/SelectField";
+import FormModal from "../../components/FormModal";
+import ErrorToast from "../../components/ErrorToast";
 
-import RequestHandler from "../helpers/RequestHandler";
-import { articlesResponse } from "./articlesResponse";
-
-const UpdateArticle = ({ crudLanguages, crudTopics, crudArticles }) => {
+const UpdateArticlePage = ({
+  topics,
+  languages,
+  getTopics,
+  getLanguages,
+  createTopic,
+  createLanguage,
+  addNewArticleToStore,
+  match,
+}) => {
   const classes = createUpdateUploadStyles();
-
-  const location = useLocation();
-  const history = useHistory();
-  const search = new URLSearchParams(location.search);
-  const id = search.get("id");
-
-  const [rowContent, setRowContent] = useState({
-    id: "",
-    title: "",
-    content: "",
-    topicId: "",
-    languageId: "",
-  });
-
-  const [topics, setTopics] = useState([]);
-  const [languages, setLanguages] = useState([]);
+  const [article, setArticle] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
   const [errors, setErrors] = useState({});
-  const [response, setResponse] = useState(null);
-  const [newSelected, setNewSelected] = useState("");
 
   useEffect(() => {
-    const newLanguage = languages.find(
-      (el) => el.name === newSelected.toUpperCase()
-    );
-    if (newLanguage) {
-      setRowContent({ ...rowContent, LanguageId: newLanguage.id });
+    const fetchArticle = async () => {
+      try {
+        setIsFetching(true);
+        const article = await agent.Articles.getById(match.params.id);
+        setArticle({ ...article });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchArticle();
+  }, []);
+
+  // When new topic/language is created, refresh the list of topics
+  useEffect(() => {
+    getLanguages();
+  }, [languages.newLanguage]);
+
+  // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
+  useEffect(() => {
+    if (
+      languages.newLanguage &&
+      languages.items.filter(
+        (language) => language.id === languages.newLanguage.id
+      ).length > 0
+    ) {
+      setArticle({
+        ...article,
+        languageId: languages.newLanguage.id,
+      });
     }
   }, [languages]);
 
   useEffect(() => {
-    const newTopic = topics.find((el) => el.name === newSelected);
-    if (newTopic) {
-      setRowContent({ ...rowContent, TopicId: newTopic.id });
+    getTopics();
+  }, [topics.newTopic]);
+
+  useEffect(() => {
+    if (
+      topics.newTopic &&
+      topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
+    ) {
+      setArticle({
+        ...article,
+        topicId: topics.newTopic.id,
+      });
     }
   }, [topics]);
 
-  // GET LANGUAGES AND TOPICS ON THE FIRST RENDER
-  useEffect(() => {
-    const getLangsTopics = async () => {
-      let tops = await crudTopics.getAllRows();
-      let langs = await crudLanguages.getAllRows();
-      setTopics(tops.data.items);
-      setLanguages(langs.data.items);
-    };
-    const getCurrentRow = async () => {
-      let row = await crudArticles.getRow(id);
-      setRowContent(row.data);
-    };
-    getCurrentRow();
-    getLangsTopics();
-  }, [crudTopics, crudLanguages, crudArticles, id]);
-
-  // UPDATE ROW AND HANDLE ERRORS
-  const updateCurrentRow = (e) => {
-    e.preventDefault();
-    crudArticles
-      .updateRow(rowContent)
-      .then((res) => {
-        setResponse(res);
-        setTimeout(() => {
-          history.push("/articles");
-        }, 1600);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-        setErrors(err.response.data.errors);
-      });
+  const setContent = (type, value) => {
+    setArticle({ ...article, [type]: value });
   };
 
-  // ADD NEW LANGUAGE AND TOPIC
-  const handleAddNewTopic = (option) => {
-    crudTopics
-      .createRow(option)
-      .then((res) => {
-        setResponse(res);
-        setTimeout(() => {
-          setResponse(null);
-        }, 1000);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-      });
-    setNewSelected(option);
-  };
-
-  const handleAddNewLanguage = (option) => {
-    crudLanguages
-      .createRow(option)
-      .then((res) => {
-        setResponse(res);
-        setTimeout(() => {
-          setResponse(null);
-        }, 1000);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-      });
-    setNewSelected(option);
+  const submitContent = async () => {
+    try {
+      const newArticle = await agent.Articles.update(article);
+      addNewArticleToStore(newArticle);
+      history.push("/articles");
+    } catch (error) {
+      setErrors({ error });
+    }
   };
 
   return (
-    <Paper className={classes.form}>
-      <Box m={1}>
-        <RequestHandler response={response} messages={articlesResponse} />
-      </Box>
-
-      <form className={classes.root}>
-        <Box m={1}>
-          <Typography variant="h5">Update article</Typography>
-        </Box>
-
-        <TextField
-          error={errors.Title && rowContent.title === "" ? true : false}
-          required
-          id="title-create"
-          label="Article Title"
-          variant="standard"
-          value={rowContent.title}
-          helperText={errors.Title}
-          onChange={(e) =>
-            setRowContent({ ...rowContent, title: e.target.value })
-          }
-        ></TextField>
-        <Box display="flex" alignItems="center" m={1}>
-          <FormControl
-            variant="standard"
-            error={errors.TopicId && rowContent.topic === "" ? true : false}
-            required
-            className={classes.select}
-          >
-            <InputLabel id="topic-create-label">Topic</InputLabel>
-            <Select
-              required
-              labelId={"topic-create-label"}
-              id="topic-create"
-              select="true"
-              label="Select topic or create new"
-              value={rowContent.topicId}
-              onChange={(e) =>
-                setRowContent({ ...rowContent, topicId: e.target.value })
-              }
-            >
-              {topics.map((topic) => (
-                <MenuItem key={topic.id} value={topic.id}>
-                  {topic.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{errors.TopicId}</FormHelperText>
-          </FormControl>
-          <FormDialogAdd name="Topic" handleAddNewOption={handleAddNewTopic} />
-        </Box>
-
-        <Box display="flex" alignItems="center" m={1}>
-          <FormControl
-            variant="standard"
-            error={
-              errors.LanguageId && rowContent.language === "" ? true : false
-            }
-            required
-            className={classes.select}
-          >
-            <InputLabel id="language-create-label">Language</InputLabel>
-            <Select
-              required
-              id="language-create"
-              labelId={"language-create-label"}
-              select="true"
-              label="Select Language or create new"
-              value={rowContent.languageId}
-              onChange={(e) =>
-                setRowContent({ ...rowContent, languageId: e.target.value })
-              }
-            >
-              {languages.map((lang) => (
-                <MenuItem key={lang.id} value={lang.id}>
-                  {lang.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{errors.LanguageId}</FormHelperText>
-          </FormControl>
-          <FormDialogAdd
-            name="Language"
-            handleAddNewOption={handleAddNewLanguage}
-          />
-        </Box>
-        <TextField
-          error={errors.Content && rowContent.content === "" ? true : false}
-          required
-          id="content-create"
-          label="Some content inside..."
-          variant="standard"
-          multiline
-          rows={5}
-          value={rowContent.content}
-          helperText={errors.Content}
-          onChange={(e) =>
-            setRowContent({ ...rowContent, content: e.target.value })
-          }
-        ></TextField>
-        <div className={classes.button}>
+    <Paper className={classes.paper} elevation={0}>
+      <Paper className={classes.form}>
+        <ErrorToast error={errors.error?.message} />
+        <ValidatorForm
+          className={classes.root}
+          onSubmit={submitContent}
+          onError={(errors) => console.log(errors)}
+        >
           <Box m={1}>
-            <Button
-              disableElevation
-              variant="contained"
-              color="primary"
-              onClick={(e) => updateCurrentRow(e)}
-              component={Link}
-              to={"/articles"}
-            >
-              Update
-            </Button>
+            <Typography variant="h5">Update article</Typography>
           </Box>
-        </div>
-      </form>
+          <TextValidator
+            required
+            label="Title"
+            name="title"
+            value={article?.title || ""}
+            onChange={(e) => setContent("title", e.target.value)}
+          />
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              name="Topic"
+              items={topics.items}
+              value={article?.topicId || ""}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Topic" handleCreateOption={createTopic} />
+          </Box>
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              name="Language"
+              items={languages.items}
+              value={article?.languageId || ""}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Language" handleCreateOption={createLanguage} />
+          </Box>
+
+          <TextValidator
+            multiline
+            required
+            rows={5}
+            label="Content"
+            name="content"
+            value={article?.content || ""}
+            onChange={(e) => setContent("content", e.target.value)}
+          />
+          <div className={classes.button}>
+            <Box m={1}>
+              <Button
+                disableElevation
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Create
+              </Button>
+            </Box>
+          </div>
+        </ValidatorForm>
+      </Paper>
     </Paper>
   );
 };
 
-export default UpdateArticle;
+const mapStateToProps = (state) => {
+  return {
+    languages: state.languages,
+    topics: state.topics,
+  };
+};
+
+export default connect(mapStateToProps, {
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+  addNewArticleToStore,
+})(UpdateArticlePage);

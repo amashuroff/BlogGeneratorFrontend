@@ -64,7 +64,6 @@ const Table = ({
         setIsFetching(true);
         const data = await agent.list(config);
         setTableData({ ...data });
-        console.log(tableData);
       } catch (error) {
         console.log(error);
         setErrors({ ...errors, error });
@@ -103,7 +102,7 @@ const Table = ({
           <TableCell align="right" className={classes.cellWithIcons}>
             <IconButton
               component={Link}
-              to={`${pathname}/update/:id${item.id}`}
+              to={`${pathname}/update/${item.id}`}
               className={
                 !disableEdit && hovered === item.id
                   ? classes.iconShow
