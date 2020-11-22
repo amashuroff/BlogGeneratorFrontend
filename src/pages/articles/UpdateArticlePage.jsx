@@ -117,7 +117,8 @@ const UpdateArticlePage = ({
           />
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
-              name="Topic"
+              label="Topic"
+              name="topicId"
               items={topics.items}
               value={article?.topicId || ""}
               handleSetContent={setContent}
@@ -126,7 +127,8 @@ const UpdateArticlePage = ({
           </Box>
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
-              name="Language"
+              label="Language"
+              name="languageId"
               items={languages.items}
               value={article?.languageId || ""}
               handleSetContent={setContent}

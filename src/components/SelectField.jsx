@@ -3,7 +3,7 @@ import _ from "lodash";
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../styles/styles";
 
-const SelectField = ({ name, items, value, handleSetContent }) => {
+const SelectField = ({ name, items, value, handleSetContent, label }) => {
   const classes = createUpdateUploadStyles();
 
   const renderMenuItems = () => {
@@ -16,16 +16,14 @@ const SelectField = ({ name, items, value, handleSetContent }) => {
     ));
   };
 
-  const correctFieldName = `${name.charAt(0).toLowerCase() + name.slice(1)}Id`;
-
   return (
     <FormControl variant="standard" required className={classes.select}>
-      <InputLabel id={`create-${name}-label`}>{name}</InputLabel>
+      <InputLabel id={`create-${name}-label`}>{label}</InputLabel>
       <Select
         select="true"
         value={value}
         onChange={(e) => {
-          handleSetContent(correctFieldName, e.target.value);
+          handleSetContent(name, e.target.value);
         }}
       >
         {renderMenuItems()}

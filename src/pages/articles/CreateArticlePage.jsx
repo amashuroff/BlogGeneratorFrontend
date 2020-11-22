@@ -106,7 +106,8 @@ const CreateArticlePage = ({
           />
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
-              name="Topic"
+              label="Topic"
+              name="topicId"
               items={topics.items}
               value={fieldContent.topicId}
               handleSetContent={setContent}
@@ -115,7 +116,8 @@ const CreateArticlePage = ({
           </Box>
           <Box display="flex" alignItems="center" m={1}>
             <SelectField
-              name="Language"
+              label="Language"
+              name="languageId"
               items={languages.items}
               value={fieldContent.languageId}
               handleSetContent={setContent}

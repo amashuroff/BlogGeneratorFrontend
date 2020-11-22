@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,11 +6,22 @@ import {
   Paper,
   FormHelperText,
 } from "@material-ui/core";
-import FormDialogAdd from "../buttons-forms/FormDialogAdd";
+import agent from "../../api/agent";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
-import RequestHandler from "../helpers/RequestHandler";
-import { articlesResponse } from "./articlesResponse";
-import SelectRow from "../buttons-forms/SelectRow";
+
+import { ValidatorForm } from "react-material-ui-form-validator";
+import SelectField from "../../components/SelectField.jsx";
+import FormModal from "../../components/FormModal";
+import ErrorToast from "../../components/ErrorToast";
+import history from "../../api/history";
+import {
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+} from "../../state/actions";
+import { connect } from "react-redux";
+
 import { DropzoneArea } from "material-ui-dropzone";
 
 const titles = [
@@ -19,192 +29,183 @@ const titles = [
   { name: "Set filename as Title", id: "filename" },
 ];
 
-const UploadArticle = ({ createRow, crudLanguages, crudTopics }) => {
+const UploadArticle = ({
+  topics,
+  languages,
+  getTopics,
+  getLanguages,
+  createTopic,
+  createLanguage,
+}) => {
   const classes = createUpdateUploadStyles();
-
-  const history = useHistory();
-
-  const [rowContent, setRowContent] = useState({
-    ArticleLine: "",
-    TopicId: "",
-    LanguageId: "",
-  });
+  const [errors, setErrors] = useState({});
+  const [dropzoneError, setDropzoneError] = useState("");
 
   const [files, setFiles] = useState([]);
-  const [topics, setTopics] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [newSelected, setNewSelected] = useState("");
 
-  const [errors, setErrors] = useState({});
-  const [response, setResponse] = useState(null);
+  const [fieldContent, setFieldContent] = useState({
+    articleLineId: "",
+    topicId: "",
+    languageId: "",
+  });
 
-  const getLangsTopics = async () => {
-    let tops = await crudTopics.getAllRows();
-    let langs = await crudLanguages.getAllRows();
-    setTopics(tops.data.items);
-    setLanguages(langs.data.items);
+  const setContent = (type, value) => {
+    setFieldContent({ ...fieldContent, [type]: value });
   };
 
+  // When new topic/language is created, refresh the list of topics
   useEffect(() => {
-    const newLanguage = languages.find(
-      (el) => el.name === newSelected.toUpperCase()
-    );
-    if (newLanguage) {
-      setRowContent({ ...rowContent, LanguageId: newLanguage.id });
+    getLanguages();
+  }, [languages.newLanguage]);
+
+  // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
+  useEffect(() => {
+    if (
+      languages.newLanguage &&
+      languages.items.filter(
+        (language) => language.id === languages.newLanguage.id
+      ).length > 0
+    ) {
+      setFieldContent({
+        ...fieldContent,
+        languageId: languages.newLanguage.id,
+      });
     }
   }, [languages]);
 
   useEffect(() => {
-    const newTopic = topics.find((el) => el.name === newSelected);
-    if (newTopic) {
-      setRowContent({ ...rowContent, TopicId: newTopic.id });
+    getTopics();
+  }, [topics.newTopic]);
+
+  useEffect(() => {
+    if (
+      topics.newTopic &&
+      topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
+    ) {
+      setFieldContent({
+        ...fieldContent,
+        topicId: topics.newTopic.id,
+      });
     }
   }, [topics]);
-
-  // GET LANGUAGES AND TOPICS ON THE FIRST RENDER
-  useEffect(() => {
-    getLangsTopics();
-  }, []);
-
-  // CREATE NEW ARTICLE AND HANDLE ERRORS
-  const createNewRow = (e) => {
-    e.preventDefault();
-    setFormData();
-    createRow(formData)
-      .then((res) => {
-        setResponse(res);
-        setTimeout(() => {
-          history.push("/articles");
-        }, 1600);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-        setErrors(err.response.data.errors);
-      });
-  };
-
-  // ADD NEW LANGUAGE AND TOPIC
-  const handleAddNewTopic = (option) => {
-    crudTopics
-      .createRow(option)
-      .then((res) => {
-        getLangsTopics();
-        setResponse(res);
-        setTimeout(() => {
-          setResponse(null);
-        }, 1000);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-      });
-    setNewSelected(option);
-  };
-
-  const handleAddNewLanguage = (option) => {
-    crudLanguages
-      .createRow(option)
-      .then((res) => {
-        getLangsTopics();
-        setResponse(res);
-        setTimeout(() => {
-          setResponse(null);
-        }, 1000);
-      })
-      .catch((err) => {
-        setResponse(err.response);
-      });
-    setNewSelected(option);
-  };
 
   // TRANSFORM ROWS/FILES TO FORM DATA
   const formData = new FormData();
 
   const setFormData = () => {
-    for (let key in rowContent) {
-      formData.append(key, rowContent[key]);
-    }
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
+    }
+
+    for (let key in fieldContent) {
+      formData.append(key, fieldContent[key]);
+    }
+  };
+
+  const submitContent = async () => {
+    if (files.length === 0) {
+      setDropzoneError(
+        "Please upload at least 1 file of format .txt to continue"
+      );
+      return;
+    }
+    try {
+      setFormData();
+      await agent.Articles.upload(formData);
+      history.push("/articles");
+    } catch (error) {
+      setErrors({ error });
     }
   };
 
   return (
-    <Paper className={classes.form}>
-      <Box m={1}>
-        <RequestHandler response={response} messages={articlesResponse} />
-      </Box>
-
-      <form className={classes.root}>
-        <Box m={1}>
-          <Typography variant="h5">Upload Article</Typography>
-        </Box>
-
-        <Box m={1}>
-          <SelectRow
-            name="Title"
-            handleSetRowContent={setRowContent}
-            rowContent={rowContent}
-            items={titles}
-            errors={errors}
-            id={"ArticleLine"}
-          />
-        </Box>
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectRow
-            name="topic"
-            handleSetRowContent={setRowContent}
-            rowContent={rowContent}
-            items={topics}
-            errors={errors}
-            id={"TopicId"}
-          />
-          <FormDialogAdd name="Topic" handleAddNewOption={handleAddNewTopic} />
-        </Box>
-        <Box display="flex" alignItems="center" m={1}>
-          <SelectRow
-            name="language"
-            handleSetRowContent={setRowContent}
-            rowContent={rowContent}
-            items={languages}
-            errors={errors}
-            id={"LanguageId"}
-          />
-          <FormDialogAdd
-            name="Language"
-            handleAddNewOption={handleAddNewLanguage}
-          />
-        </Box>
-
-        <Box m={1}>
-          <DropzoneArea
-            initialFiles={[]}
-            filesLimit={10000}
-            onChange={(newFiles) => {
-              setFiles(newFiles);
-            }}
-            onDelete={(deletedFile) => {
-              setFiles(files.filter((el) => !(el.name === deletedFile.name)));
-            }}
-          />
-          <FormHelperText>{errors.Files}</FormHelperText>
-        </Box>
-        <div className={classes.button}>
+    <Paper className={classes.paper} elevation={0}>
+      <Paper className={classes.form}>
+        <ErrorToast error={errors.error?.message} />
+        <ValidatorForm
+          className={classes.root}
+          onSubmit={submitContent}
+          onError={(errors) => console.log(errors)}
+        >
           <Box m={1}>
-            <Button
-              disableElevation
-              variant="contained"
-              color="primary"
-              onClick={(e) => createNewRow(e)}
-              component={Link}
-              to={"/articles"}
-            >
-              Upload
-            </Button>
+            <Typography variant="h5">Upload Article</Typography>
           </Box>
-        </div>
-      </form>
+
+          <Box m={1}>
+            <SelectField
+              label="Title"
+              name="articleLineId"
+              items={titles}
+              value={fieldContent.articleLineId}
+              handleSetContent={setContent}
+            />
+          </Box>
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              label="Topic"
+              name="topicId"
+              items={topics.items}
+              value={fieldContent?.topicId || ""}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Topic" handleCreateOption={createTopic} />
+          </Box>
+          <Box display="flex" alignItems="center" m={1}>
+            <SelectField
+              label="Language"
+              name="languageId"
+              items={languages.items}
+              value={fieldContent?.languageId || ""}
+              handleSetContent={setContent}
+            />
+            <FormModal name="Language" handleCreateOption={createLanguage} />
+          </Box>
+
+          <Box m={1}>
+            <DropzoneArea
+              acceptedFiles={[".txt"]}
+              initialFiles={[]}
+              filesLimit={10000}
+              onChange={(newFiles) => {
+                setFiles(newFiles);
+              }}
+              onDelete={(deletedFile) => {
+                setFiles(files.filter((el) => !(el.name === deletedFile.name)));
+              }}
+            />
+            <FormHelperText style={dropzoneError ? { color: "#ff1744" } : null}>
+              {dropzoneError || "Upload .txt files"}
+            </FormHelperText>
+          </Box>
+
+          <div className={classes.button}>
+            <Box m={1}>
+              <Button
+                disableElevation
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Upload
+              </Button>
+            </Box>
+          </div>
+        </ValidatorForm>
+      </Paper>
     </Paper>
   );
 };
 
-export default UploadArticle;
+const mapStateToProps = (state) => {
+  return {
+    languages: state.languages,
+    topics: state.topics,
+  };
+};
+
+export default connect(mapStateToProps, {
+  getLanguages,
+  getTopics,
+  createTopic,
+  createLanguage,
+})(UploadArticle);
