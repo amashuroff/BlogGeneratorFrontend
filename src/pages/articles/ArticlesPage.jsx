@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -17,9 +17,29 @@ import { useArticleStyles } from "../../styles/styles";
 import headcells from "../../config/headcells";
 import agent from "../../api/agent";
 import config from "../../api/config";
+import LinearLoader from "../../components/LinearLoader";
 
 const Articles = ({ newArticle }) => {
   const classes = useArticleStyles();
+  const [isFetching, setIsFetching] = useState(false);
+  const [refresh, setRefresh] = useState(null);
+  const [tableData, setTableData] = useState({});
+  const [tableConfig, setTableConfig] = useState(config.Articles);
+
+  useEffect(() => {
+    const fetchTableData = async () => {
+      try {
+        setIsFetching(true);
+        const data = await agent.Articles.list(tableConfig);
+        setTableData({ ...data });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchTableData();
+  }, [refresh, tableConfig]);
 
   return (
     <Paper elevation={0} className={classes.paper}>
@@ -68,11 +88,15 @@ const Articles = ({ newArticle }) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
+          <LinearLoader isFetching={isFetching} />
           <Table
             justCreatedRow={newArticle}
             headCells={headcells.Articles}
             agent={agent.Articles}
-            tableConfig={config.Articles}
+            tableData={tableData}
+            config={tableConfig}
+            setConfig={setTableConfig}
+            setRefresh={setRefresh}
           />
         </Grid>
       </Grid>

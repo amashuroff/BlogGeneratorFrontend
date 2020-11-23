@@ -24,9 +24,12 @@ import LinearLoader from "../LinearLoader";
 import FilterInput from "../FilterInput";
 
 const Table = ({
+  tableData,
   headCells,
   agent,
-  tableConfig,
+  config,
+  setConfig,
+  setRefresh,
   disableEdit,
   disableView,
   disableFilter,
@@ -35,16 +38,12 @@ const Table = ({
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
 
-  const [tableData, setTableData] = useState({});
-  const [config, setConfig] = useState(tableConfig);
   const [errors, setErrors] = useState({});
 
   // Deletion
   const [selectedItems, setSelectedItems] = useState([]);
 
   // Actions
-  const [isFetching, setIsFetching] = useState(false);
-  const [refresh, setRefresh] = useState(null);
   const [hovered, setHovered] = useState(null);
 
   // Sorting
@@ -57,22 +56,6 @@ const Table = ({
   const [filterState, setFilterState] = useState(
     initFilterFromHeadCells(headCells)
   );
-
-  useEffect(() => {
-    const fetchTableData = async () => {
-      try {
-        setIsFetching(true);
-        const data = await agent.list(config);
-        setTableData({ ...data });
-      } catch (error) {
-        console.log(error);
-        setErrors({ ...errors, error });
-      } finally {
-        setIsFetching(false);
-      }
-    };
-    fetchTableData();
-  }, [refresh, config]);
 
   const renderRows = () => {
     if (!tableData.items) return null;
@@ -307,7 +290,6 @@ const Table = ({
 
   return (
     <div className={classes.root}>
-      <LinearLoader isFetching={isFetching} />
       <ErrorToast error={errors.error?.message} />
       <Paper className={classes.paper}>
         <TableContainer>

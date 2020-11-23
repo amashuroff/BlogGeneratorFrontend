@@ -19,6 +19,7 @@ import {
   getTopics,
   createTopic,
   createLanguage,
+  addNewArticleToStore,
 } from "../../state/actions";
 import { connect } from "react-redux";
 
@@ -111,7 +112,6 @@ const UploadArticle = ({
     }
     try {
       setFormData();
-      await agent.Articles.upload(formData);
       history.push("/articles");
     } catch (error) {
       setErrors({ error });

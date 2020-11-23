@@ -1,15 +1,36 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Table from "../components/table/Table";
-import { Box, Button, Grid, Typography, Paper } from "@material-ui/core";
+import { Box, Grid, Typography, Paper } from "@material-ui/core";
 import { useArticleStyles } from "../styles/styles";
+import FormModal from "../components/FormModal";
 
 import headcells from "../config/headcells";
 import agent from "../api/agent";
 import config from "../api/config";
+import LinearLoader from "../components/LinearLoader";
+import { connect } from "react-redux";
+import { createLanguage, getLanguages } from "../state/actions";
 
-const LanguagesPage = () => {
+const LanguagesPage = ({ createLanguage, languages, getLanguages }) => {
   const classes = useArticleStyles();
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [refresh, setRefresh] = useState(null);
+  const [tableConfig, setTableConfig] = useState(config.Articles);
+
+  useEffect(() => {
+    const fetchTableData = async () => {
+      try {
+        setIsFetching(true);
+        await getLanguages(tableConfig);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchTableData();
+  }, [refresh, tableConfig, languages.newLanguage]);
 
   return (
     <Paper elevation={0} className={classes.paper}>
@@ -24,23 +45,20 @@ const LanguagesPage = () => {
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" alignItems="center">
             <Box mr={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                disableElevation
-                component={Link}
-                to="/languages/new"
-              >
-                Create
-              </Button>
+              <FormModal name="Language" handleCreateOption={createLanguage} />
             </Box>
           </Box>
         </Grid>
         <Grid item xs={12}>
+          <LinearLoader isFetching={isFetching} />
           <Table
-            tableConfig={config.Languages}
+            justCreatedRow={languages.newLanguage}
             headCells={headcells.Languages}
             agent={agent.Languages}
+            tableData={languages}
+            config={tableConfig}
+            setConfig={setTableConfig}
+            setRefresh={setRefresh}
             disableEdit
             disableFilter
             disableView
@@ -51,4 +69,12 @@ const LanguagesPage = () => {
   );
 };
 
-export default LanguagesPage;
+const mapStateToProps = (state) => {
+  return {
+    languages: state.languages,
+  };
+};
+
+export default connect(mapStateToProps, { createLanguage, getLanguages })(
+  LanguagesPage
+);

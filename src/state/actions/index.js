@@ -7,8 +7,8 @@ import {
   ADD_NEW_ARTICLE_TO_STORE,
 } from "../actions/types";
 
-export const getTopics = () => async (dispatch) => {
-  const { items, pager } = await agent.Topics.list();
+export const getTopics = (config) => async (dispatch) => {
+  const { items, pager } = await agent.Topics.list(config);
 
   dispatch({
     type: GET_TOPICS,
@@ -16,8 +16,8 @@ export const getTopics = () => async (dispatch) => {
   });
 };
 
-export const getLanguages = () => async (dispatch) => {
-  const { items, pager } = await agent.Languages.list();
+export const getLanguages = (config) => async (dispatch) => {
+  const { items, pager } = await agent.Languages.list(config);
 
   dispatch({
     type: GET_LANGUAGES,
