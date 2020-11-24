@@ -30,7 +30,7 @@ const LanguagesPage = ({ createLanguage, languages, getLanguages }) => {
       }
     };
     fetchTableData();
-  }, [refresh, tableConfig, languages.newLanguage]);
+  }, [refresh, tableConfig, languages.newLanguage, getLanguages]);
 
   return (
     <Paper elevation={0} className={classes.paper}>

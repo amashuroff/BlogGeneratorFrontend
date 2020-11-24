@@ -1,8 +1,6 @@
 import { CREATE_TOPIC, GET_TOPICS } from "../actions/types";
 
 const INITIAL_STATE = {
-  items: [],
-  pager: {},
   newTopic: null,
 };
 

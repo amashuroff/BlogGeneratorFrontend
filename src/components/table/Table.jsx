@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { formatTime, asyncForEach, initFilterFromHeadCells } from "../../utils";
 
@@ -129,12 +129,12 @@ const Table = ({
     return (
       <TablePagination
         component="div"
-        count={tableData.pager ? tableData.pager.total : 0}
-        rowsPerPage={tableData.pager ? tableData.pager.pageSize : 5}
-        page={tableData.pager ? tableData.pager.page : 0}
+        count={tableData?.pager ? tableData.pager.total : 0}
+        rowsPerPage={tableData?.pager ? tableData.pager.pageSize : 5}
+        page={tableData?.pager ? tableData.pager.page : 0}
         onChangePage={(event, page) => handleChangePage(page)}
         onChangeRowsPerPage={(event) => handleChangeRowsPerPage(event)}
-        rowsPerPageOptions={tableData.pager ? [5, 25, 50, 100] : [""]}
+        rowsPerPageOptions={tableData?.pager ? [5, 25, 50, 100] : [""]}
       />
     );
   };

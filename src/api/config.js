@@ -20,8 +20,10 @@ const Languages = {
   sortByCreatedAt: 2,
 };
 
-export default {
+const config = {
   Articles,
   Languages,
   Topics,
 };
+
+export default config;

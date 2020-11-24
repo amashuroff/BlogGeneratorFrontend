@@ -67,8 +67,10 @@ const Languages = [
   },
 ];
 
-export default {
+const headCells = {
   Articles,
   Topics,
   Languages,
 };
+
+export default headCells;

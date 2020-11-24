@@ -23,7 +23,7 @@ const ViewArticlePage = (props) => {
       }
     };
     fetchArticle();
-  }, []);
+  }, [props.match.params.id]);
 
   return (
     <Paper className={classes.paper} elevation={0}>

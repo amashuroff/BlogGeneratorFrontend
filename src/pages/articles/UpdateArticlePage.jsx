@@ -42,7 +42,7 @@ const UpdateArticlePage = ({
       }
     };
     fetchArticle();
-  }, []);
+  }, [match.params.id]);
 
   // When new topic/language is created, refresh the list of topics
   useEffect(() => {

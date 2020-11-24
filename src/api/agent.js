@@ -66,8 +66,10 @@ const Topics = {
   deleteById: (id) => requests.del("/topic/" + id),
 };
 
-export default {
+const agent = {
   Articles,
   Topics,
   Languages,
 };
+
+export default agent;
