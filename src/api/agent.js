@@ -1,7 +1,33 @@
 import axios from "axios";
 import { ApiServerUrl } from "./urls";
+import { OPEN_ERROR_TOAST } from "../state/actions/types";
 
 axios.defaults.baseURL = ApiServerUrl;
+
+export const interceptor = (store) => {
+  axios.interceptors.request.use(
+    (conf) => {
+      // you can add some information before send it.
+      // conf.headers['Auth'] = 'some token'
+      return conf;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+  axios.interceptors.response.use(
+    (next) => {
+      return Promise.resolve(next);
+    },
+    (error) => {
+      store.dispatch({
+        type: OPEN_ERROR_TOAST,
+        payload: error.message,
+      });
+      return Promise.reject(error);
+    }
+  );
+};
 
 const responseBody = (response) => response.data;
 

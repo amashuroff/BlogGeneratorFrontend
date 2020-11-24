@@ -6,20 +6,17 @@ import {
   Paper,
   FormHelperText,
 } from "@material-ui/core";
-import agent from "../../api/agent";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
 
 import { ValidatorForm } from "react-material-ui-form-validator";
 import SelectField from "../../components/SelectField.jsx";
 import FormModal from "../../components/FormModal";
-import ErrorToast from "../../components/ErrorToast";
 import history from "../../api/history";
 import {
   getLanguages,
   getTopics,
   createTopic,
   createLanguage,
-  addNewArticleToStore,
 } from "../../state/actions";
 import { connect } from "react-redux";
 
@@ -39,7 +36,6 @@ const UploadArticle = ({
   createLanguage,
 }) => {
   const classes = createUpdateUploadStyles();
-  const [errors, setErrors] = useState({});
   const [dropzoneError, setDropzoneError] = useState("");
 
   const [files, setFiles] = useState([]);
@@ -114,14 +110,13 @@ const UploadArticle = ({
       setFormData();
       history.push("/articles");
     } catch (error) {
-      setErrors({ error });
+      console.log(error);
     }
   };
 
   return (
     <Paper className={classes.paper} elevation={0}>
       <Paper className={classes.form}>
-        <ErrorToast error={errors.error?.message} />
         <ValidatorForm
           className={classes.root}
           onSubmit={submitContent}

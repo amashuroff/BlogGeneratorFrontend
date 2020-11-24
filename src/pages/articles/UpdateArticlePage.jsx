@@ -14,7 +14,6 @@ import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
 import SelectField from "../../components/SelectField";
 import FormModal from "../../components/FormModal";
-import ErrorToast from "../../components/ErrorToast";
 
 const UpdateArticlePage = ({
   topics,
@@ -29,7 +28,6 @@ const UpdateArticlePage = ({
   const classes = createUpdateUploadStyles();
   const [article, setArticle] = useState({});
   const [isFetching, setIsFetching] = useState(false);
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -92,14 +90,13 @@ const UpdateArticlePage = ({
       addNewArticleToStore(newArticle);
       history.push("/articles");
     } catch (error) {
-      setErrors({ error });
+      console.log(error);
     }
   };
 
   return (
     <Paper className={classes.paper} elevation={0}>
       <Paper className={classes.form}>
-        <ErrorToast error={errors.error?.message} />
         <ValidatorForm
           className={classes.root}
           onSubmit={submitContent}

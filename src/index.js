@@ -5,12 +5,14 @@ import { Provider } from "react-redux";
 import { createStore, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import reducers from "./state/reducers";
+import { interceptor } from "./api/agent";
 
 // redux dev tools
 const composeEnchancers =
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(reducers, composeEnchancers(applyMiddleware(thunk)));
+interceptor(store);
 
 ReactDOM.render(
   <Provider store={store}>

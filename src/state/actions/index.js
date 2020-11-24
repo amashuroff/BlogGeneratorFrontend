@@ -5,6 +5,7 @@ import {
   CREATE_TOPIC,
   CREATE_LANGUAGE,
   ADD_NEW_ARTICLE_TO_STORE,
+  CLOSE_ERROR_TOAST,
 } from "../actions/types";
 
 export const getTopics = (config) => async (dispatch) => {
@@ -47,5 +48,11 @@ export const addNewArticleToStore = (article) => {
   return {
     type: ADD_NEW_ARTICLE_TO_STORE,
     payload: article,
+  };
+};
+
+export const closeErrorToast = () => {
+  return {
+    type: CLOSE_ERROR_TOAST,
   };
 };

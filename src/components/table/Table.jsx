@@ -19,8 +19,6 @@ import CreateIcon from "@material-ui/icons/Create";
 import THead from "./THead";
 import TableToolbar from "./TableToolbar";
 import { useTableBodyStyles } from "../../styles/styles";
-import ErrorToast from "../ErrorToast";
-import LinearLoader from "../LinearLoader";
 import FilterInput from "../FilterInput";
 
 const Table = ({
@@ -37,8 +35,6 @@ const Table = ({
 }) => {
   const classes = useTableBodyStyles();
   const { pathname } = window.location;
-
-  const [errors, setErrors] = useState({});
 
   // Deletion
   const [selectedItems, setSelectedItems] = useState([]);
@@ -290,7 +286,6 @@ const Table = ({
 
   return (
     <div className={classes.root}>
-      <ErrorToast error={errors.error?.message} />
       <Paper className={classes.paper}>
         <TableContainer>
           <TableToolbar

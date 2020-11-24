@@ -1,32 +1,34 @@
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { closeErrorToast } from "../state/actions";
 
-const ErrorToast = ({ error }) => {
-  const [open, setOpen] = useState(true);
+const ErrorToast = (props) => {
+  const [open, setOpen] = useState(false);
 
-  if (!error) return null;
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
+  useEffect(() => {
+    setOpen(props.errors.open);
+  }, [props.errors.open]);
 
   return (
     <Snackbar
       open={open}
       autoHideDuration={10000}
-      onClose={handleClose}
+      onClose={props.closeErrorToast}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
     >
-      <Alert onClose={handleClose} severity="warning">
-        {`Something went wrong, please refresh the page or contact us! Error: ${error}`}
+      <Alert onClose={props.closeErrorToast} severity="warning">
+        {props.errors.message}
       </Alert>
     </Snackbar>
   );
 };
 
-export default ErrorToast;
+const mapStateToProps = (state) => {
+  return {
+    errors: state.errors,
+  };
+};
+
+export default connect(mapStateToProps, { closeErrorToast })(ErrorToast);

@@ -13,6 +13,9 @@ import NotFoundPage from "../pages/NotFoundPage";
 import ViewArticlePage from "../pages/articles/ViewArticlePage";
 import UpdateArticlePage from "../pages/articles/UpdateArticlePage";
 import UploadArticlePage from "../pages/articles/UploadArticlePage";
+import SignInPage from "../pages/SignInPage";
+import SignUpPage from "../pages/SignUpPage";
+import ErrorToast from "./ErrorToast";
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
         <AppWrapper>
           <Switch>
             <Route path="/" exact component={Home} />
+
+            <Route path="/account/sign-in" exact component={SignInPage} />
+            <Route path="/account/sign-up" component={SignUpPage} />
 
             <Route path="/articles" exact component={ArticlesPage} />
             <Route path="/articles/new" component={CreateArticlePage} />
@@ -37,6 +43,7 @@ function App() {
             <Route path="/404" component={NotFoundPage} />
             <Redirect to="/404" />
           </Switch>
+          <ErrorToast />
         </AppWrapper>
       </Router>
     </>

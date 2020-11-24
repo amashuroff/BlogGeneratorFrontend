@@ -14,7 +14,6 @@ import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../../styles/styles.js";
 import SelectField from "../../components/SelectField";
 import FormModal from "../../components/FormModal";
-import ErrorToast from "../../components/ErrorToast";
 
 const CreateArticlePage = ({
   topics,
@@ -26,7 +25,6 @@ const CreateArticlePage = ({
   addNewArticleToStore,
 }) => {
   const classes = createUpdateUploadStyles();
-  const [errors, setErrors] = useState({});
 
   const [fieldContent, setFieldContent] = useState({
     title: "",
@@ -81,14 +79,13 @@ const CreateArticlePage = ({
       addNewArticleToStore(newArticle);
       history.push("/articles");
     } catch (error) {
-      setErrors({ error });
+      console.log(error);
     }
   };
 
   return (
     <Paper className={classes.paper} elevation={0}>
       <Paper className={classes.form}>
-        <ErrorToast error={errors.error?.message} />
         <ValidatorForm
           className={classes.root}
           onSubmit={submitContent}

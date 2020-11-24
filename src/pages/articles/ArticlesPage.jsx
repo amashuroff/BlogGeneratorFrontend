@@ -32,8 +32,6 @@ const Articles = ({ newArticle }) => {
         setIsFetching(true);
         const data = await agent.Articles.list(tableConfig);
         setTableData({ ...data });
-      } catch (error) {
-        console.log(error);
       } finally {
         setIsFetching(false);
       }
