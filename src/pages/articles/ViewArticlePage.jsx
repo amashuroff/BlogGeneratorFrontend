@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, Button, Paper, Typography } from "@material-ui/core";
-import { createUpdateUploadStyles } from "../../styles/styles.js";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import agent from "../../api/agent";
+
+import { createUpdateUploadStyles } from "../../styles/styles.js";
+
+import { Box, Button, Paper, Typography } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const ViewArticlePage = (props) => {
   const classes = createUpdateUploadStyles();

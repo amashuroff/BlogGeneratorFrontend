@@ -6,8 +6,9 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import DescriptionIcon from "@material-ui/icons/Description";
-import { ListSubheader } from "@material-ui/core";
 import ListIcon from "@material-ui/icons/List";
+
+import { ListSubheader } from "@material-ui/core";
 
 export const MainListItems = () => {
   return (

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { formatTime, asyncForEach, initFilterFromHeadCells } from "../../utils";
 
+import { useTableBodyStyles } from "../../styles/styles";
+
 import MaterialTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -18,7 +20,6 @@ import CreateIcon from "@material-ui/icons/Create";
 
 import THead from "./THead";
 import TableToolbar from "./TableToolbar";
-import { useTableBodyStyles } from "../../styles/styles";
 import FilterInput from "../FilterInput";
 
 const Table = ({

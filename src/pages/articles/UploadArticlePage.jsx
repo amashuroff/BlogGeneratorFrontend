@@ -1,16 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-  FormHelperText,
-} from "@material-ui/core";
-import { createUpdateUploadStyles } from "../../styles/styles.js";
-
-import { ValidatorForm } from "react-material-ui-form-validator";
-import SelectField from "../../components/SelectField.jsx";
-import FormModal from "../../components/FormModal";
+import { connect } from "react-redux";
 import history from "../../api/history";
 import {
   getLanguages,
@@ -18,8 +7,18 @@ import {
   createTopic,
   createLanguage,
 } from "../../state/actions";
-import { connect } from "react-redux";
 
+import { createUpdateUploadStyles } from "../../styles/styles.js";
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  FormHelperText,
+} from "@material-ui/core";
+import { ValidatorForm } from "react-material-ui-form-validator";
+import SelectField from "../../components/SelectField.jsx";
+import FormModal from "../../components/FormModal";
 import { DropzoneArea } from "material-ui-dropzone";
 
 const titles = [

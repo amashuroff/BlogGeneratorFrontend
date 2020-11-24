@@ -1,5 +1,7 @@
 import React from "react";
+
 import { useDashboardStyles } from "../styles/styles";
+
 import AppBarPanel from "./appbar-panel/AppBarPanel";
 
 const AppWrapper = ({ children }) => {

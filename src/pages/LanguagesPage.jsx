@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Table from "../components/table/Table";
-import { Box, Grid, Typography, Paper } from "@material-ui/core";
-import { useArticleStyles } from "../styles/styles";
-import FormModal from "../components/FormModal";
-
+import { connect } from "react-redux";
 import headcells from "../config/headcells";
 import agent from "../api/agent";
 import config from "../api/config";
-import LinearLoader from "../components/LinearLoader";
-import { connect } from "react-redux";
 import { createLanguage, getLanguages } from "../state/actions";
+
+import { useArticleStyles } from "../styles/styles";
+
+import { Box, Grid, Typography, Paper } from "@material-ui/core";
+import FormModal from "../components/FormModal";
+import Table from "../components/table/Table";
+import LinearLoader from "../components/LinearLoader";
 
 const LanguagesPage = ({ createLanguage, languages, getLanguages }) => {
   const classes = useArticleStyles();

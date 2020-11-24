@@ -1,7 +1,8 @@
-import { Snackbar } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+
+import { Snackbar } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import { closeErrorToast } from "../state/actions";
 
 const ErrorToast = (props) => {

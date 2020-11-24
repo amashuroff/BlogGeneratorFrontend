@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
-import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { createUpdateUploadStyles } from "../styles/styles";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 
 const SelectField = ({ name, items, value, handleSetContent, label }) => {
   const classes = createUpdateUploadStyles();

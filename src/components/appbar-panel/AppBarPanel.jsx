@@ -1,10 +1,9 @@
 import React from "react";
-
 import clsx from "clsx";
-
 import { MainListItems, secondaryListItems } from "./appBarListItems";
 
 import { useDashboardStyles } from "../../styles/styles";
+
 import {
   AppBar,
   Avatar,

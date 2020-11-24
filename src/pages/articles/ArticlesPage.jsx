@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import headcells from "../../config/headcells";
+import agent from "../../api/agent";
+import config from "../../api/config";
+
+import { useArticleStyles } from "../../styles/styles";
 
 import {
   Box,
@@ -11,12 +16,8 @@ import {
   Link as MaterialLink,
 } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
-import Table from "../../components/table/Table";
-import { useArticleStyles } from "../../styles/styles";
 
-import headcells from "../../config/headcells";
-import agent from "../../api/agent";
-import config from "../../api/config";
+import Table from "../../components/table/Table";
 import LinearLoader from "../../components/LinearLoader";
 
 const Articles = ({ newArticle }) => {

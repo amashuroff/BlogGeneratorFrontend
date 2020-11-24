@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import agent from "../../api/agent";
 import { connect } from "react-redux";
 import history from "../../api/history";
+
+import { createUpdateUploadStyles } from "../../styles/styles.js";
+
 import {
   getLanguages,
   getTopics,
@@ -11,7 +14,7 @@ import {
 } from "../../state/actions";
 import { Box, Button, Typography, Paper } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { createUpdateUploadStyles } from "../../styles/styles.js";
+
 import SelectField from "../../components/SelectField";
 import FormModal from "../../components/FormModal";
 
