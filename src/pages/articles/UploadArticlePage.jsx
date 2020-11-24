@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -51,9 +51,16 @@ const UploadArticle = ({
   };
 
   // When new topic/language is created, refresh the list of topics
+  const memoizedGetLanguages = useCallback(getLanguages, [getLanguages]);
+  const memoizedGetTopics = useCallback(getTopics, [getTopics]);
+
   useEffect(() => {
-    getLanguages();
-  }, [languages.newLanguage]);
+    memoizedGetLanguages();
+  }, [languages.newLanguage, memoizedGetLanguages]);
+
+  useEffect(() => {
+    memoizedGetTopics();
+  }, [topics.newTopic, memoizedGetTopics]);
 
   // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
   useEffect(() => {
@@ -63,25 +70,25 @@ const UploadArticle = ({
         (language) => language.id === languages.newLanguage.id
       ).length > 0
     ) {
-      setFieldContent({
-        ...fieldContent,
-        languageId: languages.newLanguage.id,
+      setFieldContent((fieldContent) => {
+        return {
+          ...fieldContent,
+          languageId: languages.newLanguage.id,
+        };
       });
     }
   }, [languages]);
-
-  useEffect(() => {
-    getTopics();
-  }, [topics.newTopic]);
 
   useEffect(() => {
     if (
       topics.newTopic &&
       topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
     ) {
-      setFieldContent({
-        ...fieldContent,
-        topicId: topics.newTopic.id,
+      setFieldContent((fieldContent) => {
+        return {
+          ...fieldContent,
+          topicId: topics.newTopic.id,
+        };
       });
     }
   }, [topics]);

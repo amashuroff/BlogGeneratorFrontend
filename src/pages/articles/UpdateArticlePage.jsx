@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import agent from "../../api/agent";
 import { connect } from "react-redux";
 import history from "../../api/history";
@@ -27,27 +27,34 @@ const UpdateArticlePage = ({
 }) => {
   const classes = createUpdateUploadStyles();
   const [article, setArticle] = useState({});
-  const [isFetching, setIsFetching] = useState(false);
+  // const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        setIsFetching(true);
+        // setIsFetching(true);
         const article = await agent.Articles.getById(match.params.id);
         setArticle({ ...article });
       } catch (error) {
         console.log(error);
       } finally {
-        setIsFetching(false);
+        // setIsFetching(false);
       }
     };
     fetchArticle();
   }, [match.params.id]);
 
   // When new topic/language is created, refresh the list of topics
+  const memoizedGetLanguages = useCallback(getLanguages, [getLanguages]);
+  const memoizedGetTopics = useCallback(getTopics, [getTopics]);
+
   useEffect(() => {
-    getLanguages();
-  }, [languages.newLanguage]);
+    memoizedGetLanguages();
+  }, [languages.newLanguage, memoizedGetLanguages]);
+
+  useEffect(() => {
+    memoizedGetTopics();
+  }, [topics.newTopic, memoizedGetTopics]);
 
   // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
   useEffect(() => {
@@ -57,25 +64,25 @@ const UpdateArticlePage = ({
         (language) => language.id === languages.newLanguage.id
       ).length > 0
     ) {
-      setArticle({
-        ...article,
-        languageId: languages.newLanguage.id,
+      setArticle((article) => {
+        return {
+          ...article,
+          languageId: languages.newLanguage.id,
+        };
       });
     }
   }, [languages]);
-
-  useEffect(() => {
-    getTopics();
-  }, [topics.newTopic]);
 
   useEffect(() => {
     if (
       topics.newTopic &&
       topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
     ) {
-      setArticle({
-        ...article,
-        topicId: topics.newTopic.id,
+      setArticle((article) => {
+        return {
+          ...article,
+          topicId: topics.newTopic.id,
+        };
       });
     }
   }, [topics]);
@@ -116,7 +123,7 @@ const UpdateArticlePage = ({
             <SelectField
               label="Topic"
               name="topicId"
-              items={topics.items}
+              items={topics?.items}
               value={article?.topicId || ""}
               handleSetContent={setContent}
             />
@@ -126,7 +133,7 @@ const UpdateArticlePage = ({
             <SelectField
               label="Language"
               name="languageId"
-              items={languages.items}
+              items={languages?.items}
               value={article?.languageId || ""}
               handleSetContent={setContent}
             />

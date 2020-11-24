@@ -36,7 +36,7 @@ const CreateArticlePage = ({
   // When new topic/language is created, refresh the list of topics
   useEffect(() => {
     getLanguages();
-  }, [languages.newLanguage]);
+  }, [languages.newLanguage, getLanguages]);
 
   // When list of topics/languages is fetched, if a new topic has been just created, set it as selected
   useEffect(() => {
@@ -46,25 +46,29 @@ const CreateArticlePage = ({
         (language) => language.id === languages.newLanguage.id
       ).length > 0
     ) {
-      setFieldContent({
-        ...fieldContent,
-        languageId: languages.newLanguage.id,
+      setFieldContent((fieldContent) => {
+        return {
+          ...fieldContent,
+          languageId: languages.newLanguage.id,
+        };
       });
     }
   }, [languages]);
 
   useEffect(() => {
     getTopics();
-  }, [topics.newTopic]);
+  }, [topics.newTopic, getTopics]);
 
   useEffect(() => {
     if (
       topics.newTopic &&
       topics.items.filter((topic) => topic.id === topics.newTopic.id).length > 0
     ) {
-      setFieldContent({
-        ...fieldContent,
-        topicId: topics.newTopic.id,
+      setFieldContent((fieldContent) => {
+        return {
+          ...fieldContent,
+          topicId: topics.newTopic.id,
+        };
       });
     }
   }, [topics]);

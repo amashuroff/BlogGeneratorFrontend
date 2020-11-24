@@ -30,7 +30,7 @@ const TopicsPage = ({ createTopic, topics, getTopics }) => {
       }
     };
     fetchTableData();
-  }, [refresh, tableConfig, topics.newTopic]);
+  }, [refresh, tableConfig, topics.newTopic, getTopics]);
 
   return (
     <Paper elevation={0} className={classes.paper}>

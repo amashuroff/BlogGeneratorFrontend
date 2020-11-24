@@ -16,7 +16,6 @@ const SelectField = ({ name, items, value, handleSetContent, label }) => {
     ));
   };
 
-  console.log(items);
   return (
     <FormControl variant="standard" required className={classes.select}>
       <InputLabel id={`create-${name}-label`}>{label}</InputLabel>

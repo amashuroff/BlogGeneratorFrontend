@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { formatTime, asyncForEach, initFilterFromHeadCells } from "../../utils";
 
@@ -276,13 +276,15 @@ const Table = ({
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setConfig({ ...config, ...filterState });
+      setConfig((config) => {
+        return { ...config, ...filterState };
+      });
     }, 500);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [filterState]);
+  }, [filterState, setConfig]);
 
   return (
     <div className={classes.root}>
