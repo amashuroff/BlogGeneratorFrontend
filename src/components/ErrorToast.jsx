@@ -19,7 +19,7 @@ const ErrorToast = (props) => {
       onClose={props.closeErrorToast}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
     >
-      <Alert onClose={props.closeErrorToast} severity="warning">
+      <Alert onClose={props.closeErrorToast} severity="error">
         {props.errors.message}
       </Alert>
     </Snackbar>

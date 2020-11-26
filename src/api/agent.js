@@ -20,10 +20,18 @@ export const interceptor = (store) => {
       return Promise.resolve(next);
     },
     (error) => {
-      store.dispatch({
-        type: OPEN_ERROR_TOAST,
-        payload: error.message,
-      });
+      if (error.response?.data?.errors?.Name) {
+        store.dispatch({
+          type: OPEN_ERROR_TOAST,
+          payload: error.response?.data?.errors?.Name,
+        });
+      } else {
+        store.dispatch({
+          type: OPEN_ERROR_TOAST,
+          payload: error.message,
+        });
+      }
+
       return Promise.reject(error);
     }
   );

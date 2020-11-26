@@ -6,15 +6,25 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Box } from "@material-ui/core";
+import { Box, FormHelperText } from "@material-ui/core";
 import OutlinedButton from "./OutlinedButton";
 
 const FormModal = ({ name, handleCreateOption }) => {
   const [open, setOpen] = useState(false);
   const [option, setOption] = useState("");
+  const [modalError, setModalError] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
+  };
+
+  const handleAddOption = () => {
+    if (option === "") {
+      setModalError("Please fill in this field");
+      return;
+    }
+    handleCreateOption(option.toLowerCase());
+    handleClose();
   };
 
   const handleClose = () => {
@@ -44,6 +54,11 @@ const FormModal = ({ name, handleCreateOption }) => {
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
         fullWidth
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            handleAddOption();
+          }
+        }}
       >
         <DialogTitle id="form-dialog-title">{`Add ${name}`}</DialogTitle>
         <DialogContent>
@@ -64,18 +79,15 @@ const FormModal = ({ name, handleCreateOption }) => {
             }}
             helperText={`${option.length}/${setMaxLength()}`}
           />
+          <FormHelperText style={modalError ? { color: "#ff1744" } : null}>
+            {modalError}
+          </FormHelperText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button
-            onClick={() => {
-              handleCreateOption(option.toLowerCase());
-              handleClose();
-            }}
-            color="primary"
-          >
+          <Button onClick={handleAddOption} color="primary">
             Add
           </Button>
         </DialogActions>

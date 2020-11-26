@@ -20,6 +20,7 @@ import { ValidatorForm } from "react-material-ui-form-validator";
 import SelectField from "../../components/SelectField.jsx";
 import FormModal from "../../components/FormModal";
 import { DropzoneArea } from "material-ui-dropzone";
+import agent from "../../api/agent";
 
 const titles = [
   { name: "Set first line as Title", id: "firstLine" },
@@ -114,6 +115,7 @@ const UploadArticle = ({
     }
     try {
       setFormData();
+      await agent.Articles.upload(formData);
       history.push("/articles");
     } catch (error) {
       console.log(error);

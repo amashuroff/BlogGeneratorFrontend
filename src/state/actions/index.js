@@ -5,6 +5,9 @@ import {
   CREATE_TOPIC,
   CREATE_LANGUAGE,
   ADD_NEW_ARTICLE_TO_STORE,
+  DELETE_NEW_ARTICLE_FROM_STORE,
+  DELETE_NEW_LANGUAGE_FROM_STORE,
+  DELETE_NEW_TOPIC_FROM_STORE,
   CLOSE_ERROR_TOAST,
 } from "../actions/types";
 
@@ -33,6 +36,12 @@ export const createTopic = (name) => async (dispatch) => {
     type: CREATE_TOPIC,
     payload: newTopic,
   });
+
+  setTimeout(() => {
+    dispatch({
+      type: DELETE_NEW_TOPIC_FROM_STORE,
+    });
+  }, 2000);
 };
 
 export const createLanguage = (name) => async (dispatch) => {
@@ -42,13 +51,25 @@ export const createLanguage = (name) => async (dispatch) => {
     type: CREATE_LANGUAGE,
     payload: newLanguage,
   });
+
+  setTimeout(() => {
+    dispatch({
+      type: DELETE_NEW_LANGUAGE_FROM_STORE,
+    });
+  }, 2000);
 };
 
-export const addNewArticleToStore = (article) => {
-  return {
+export const addNewArticleToStore = (article) => async (dispatch) => {
+  await dispatch({
     type: ADD_NEW_ARTICLE_TO_STORE,
     payload: article,
-  };
+  });
+
+  setTimeout(() => {
+    dispatch({
+      type: DELETE_NEW_ARTICLE_FROM_STORE,
+    });
+  }, 2000);
 };
 
 export const closeErrorToast = () => {

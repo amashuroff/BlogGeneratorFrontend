@@ -20,7 +20,7 @@ import { CloudUpload } from "@material-ui/icons";
 import Table from "../../components/table/Table";
 import LinearLoader from "../../components/LinearLoader";
 
-const Articles = ({ newArticle }) => {
+const Articles = ({ newArticle, animate }) => {
   const classes = useArticleStyles();
   const [isFetching, setIsFetching] = useState(false);
   const [refresh, setRefresh] = useState(null);

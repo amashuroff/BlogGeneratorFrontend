@@ -164,8 +164,9 @@ export const useTableBodyStyles = makeStyles((theme) => ({
   },
 
   "@keyframes fadeOut": {
-    from: { "background-color": "#FFC300" },
-    to: { "background-color": "#FFF" },
+    "0%": { "background-color": "#FFF" },
+    "50%": { "background-color": "#C5C3BA" },
+    "100%": { "background-color": "#FFF" },
   },
   justCreatedRow: {
     animationName: "$fadeOut",
