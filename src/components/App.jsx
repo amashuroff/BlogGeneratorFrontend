@@ -23,12 +23,12 @@ function App() {
       <CssBaseline />
 
       <Router history={history}>
-        <AppWrapper>
-          <Switch>
-            <Route path="/" exact component={Home} />
+        <Switch>
+          <Route path="/account/sign-in" exact component={SignInPage} />
+          <Route path="/account/sign-up" component={SignUpPage} />
 
-            <Route path="/account/sign-in" exact component={SignInPage} />
-            <Route path="/account/sign-up" component={SignUpPage} />
+          <AppWrapper>
+            <Route path="/" exact component={Home} />
 
             <Route path="/articles" exact component={ArticlesPage} />
             <Route path="/articles/new" component={CreateArticlePage} />
@@ -42,9 +42,10 @@ function App() {
 
             <Route path="/404" component={NotFoundPage} />
             <Redirect to="/404" />
-          </Switch>
-          <ErrorToast />
-        </AppWrapper>
+
+            <ErrorToast />
+          </AppWrapper>
+        </Switch>
       </Router>
     </>
   );
